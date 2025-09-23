@@ -1,0 +1,1 @@
+# MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning
