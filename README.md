@@ -7,16 +7,22 @@
 - **Affiliations:** KFUPM
 
 ## Introduction
-Write 1-2 technical paragraphs (feel free to add images if you would like).
+In recent years, vision-language models like CLIP have made significant progress in integrating text and images. They excel particularly in zero-shot transfer and image-text retrieval. Their capacity to generalize across languages is, however, limited because they have received nearly all of their training on English captions. To close this gap, MultiCapCLIP was developed, which aligns photos with multilingually translated captions to create a common multilingual semantic space.
+In this project, I expand MultiCapCLIP to include Arabic, a frequently spoken language with a rich morphology that is still neglected in multimodal AI research. In addition to modifying the dataset, I suggest a straightforward yet significant architectural change—an extra attention layer—to improve performance on cross-lingual retrieval tasks and reinforce the alignment of Arabic captions with image embeddings.
 
 ## Problem Statement
-Write 1-2 technical paragraphs (feel free to add images if you would like).
+The accuracy of CLIP and related multilingual models declines significantly when processing Arabic captions, despite strong results on English-centric datasets. This performance gap is primarily due to the scarcity of high-quality annotated Arabic image–text pairs, the morphological complexity of the Arabic language, and the architectural bias of most models toward English syntax. As a result, the reliability of Arabic retrieval tasks is reduced, which limits the practical deployment of these models in real-world applications across the MENA region.
+To address these challenges, my project enhances MultiCapCLIP using Arabic COCO captions and incorporates an additional attention layer into the text encoder. This modification aims to reduce the performance gap between Arabic and English in multimodal tasks by enabling the model to better capture Arabic-specific semantic relationships.
 
 ## Application Area and Project Domain
-Write 1-2 technical paragraphs (feel free to add images if you would like).
+With an emphasis on cross-lingual retrieval—the process of matching images with captions in several languages—this effort falls under the umbrella of multimodal AI and vision–language models. By focusing on Arabic, I aim to bridge a significant support gap for low-resource yet highly influential languages and contribute to the development of AI systems that are more inclusive and globally relevant.
+Applications include Arabic-focused educational resources, multilingual search engines, and regional AI services for digital media, government, and healthcare in the MENA area. Enhancing image-caption retrieval in Arabic could provide millions of Arabic speakers with access to state-of-the-art AI, aligning AI innovation with local linguistic and cultural requirements.
 
 ## What is the paper trying to do, and what are you planning to do?
-Write 1-2 technical paragraphs (feel free to add images if you would like).
+The original MultiCapCLIP paper extends CLIP to the multilingual setting by aligning images with multiple translated captions. This approach enables the model to generalize to languages beyond English and supports cross-lingual retrieval tasks without dependence on external machine translation during inference.
+
+In this project, we reproduce the MultiCapCLIP approach with a focus on Arabic captions from the COCO dataset. We also introduce an additional attention layer to the text encoder to better capture linguistic nuances in Arabic. We compare three models: baseline CLIP (English only), MultiCapCLIP (with Arabic captions), and MultiCapCLIP with the added attention layer. Their performance is evaluated using retrieval and captioning metrics, including Recall@K, BLEU, METEOR, ROUGE, and CIDEr. Our main goal is to evaluate whether these architectural enhancements improve Arabic cross-lingual retrieval.
+.
 
 
 # THE FOLLOWING IS SUPPOSED TO BE DONE LATER
@@ -29,7 +35,7 @@ Write 1-2 technical paragraphs (feel free to add images if you would like).
 - [(ACL'2023) MultiCapCLIP: Auto-Encoding Prompts for Zero-Shot Multilingual Visual Captioning](https://aclanthology.org/2023.acl-long.664/)
 
 ### Reference Dataset
-- [LAION-5B Dataset](https://laion.ai/blog/laion-5b/)
+- [MS COCO Dataset](https://cocodataset.org/#home)
 
 
 ## Project Technicalities
