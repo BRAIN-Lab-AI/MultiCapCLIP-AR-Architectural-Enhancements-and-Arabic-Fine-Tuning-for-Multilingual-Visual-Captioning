@@ -26,7 +26,7 @@ Write 1-2 technical paragraphs (feel free to add images if you would like).
 - **Report:** [Project Report](/report.pdf)
 
 ### Reference Paper
-- [High-Resolution Image Synthesis with Latent Diffusion Models](https://arxiv.org/abs/2112.10752)
+- [(ACL'2023) MultiCapCLIP: Auto-Encoding Prompts for Zero-Shot Multilingual Visual Captioning](https://aclanthology.org/2023.acl-long.664/)
 
 ### Reference Dataset
 - [LAION-5B Dataset](https://laion.ai/blog/laion-5b/)
