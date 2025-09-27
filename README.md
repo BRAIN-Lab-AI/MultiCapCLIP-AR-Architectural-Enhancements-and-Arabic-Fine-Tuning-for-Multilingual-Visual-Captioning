@@ -37,6 +37,25 @@ In this project, we reproduce the MultiCapCLIP approach with a focus on Arabic c
 ### Reference Dataset
 - [MS COCO Dataset](https://cocodataset.org/#home)
 
+### Dataset Setup
+To reproduce our experiments, you need the **MS COCO 2014** dataset (val split + annotations).  
+We provide a simple script to download and extract everything automatically.
+
+ ```bash
+mkdir -p /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/
+
+wget -c http://images.cocodataset.org/zips/val2014.zip \
+    -P /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/
+
+wget -c http://images.cocodataset.org/annotations/annotations_trainval2014.zip \
+    -P /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/
+
+unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/val2014.zip \
+    -d /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/
+
+unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval2014.zip \
+    -d /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/
+ ```
 
 ## Project Technicalities
 
