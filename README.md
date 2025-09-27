@@ -60,6 +60,15 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 ## Project Technicalities
 
 ### Terminologies
+
+-**Text Encoder:** BERT/mBERT-based encoder for text embeddings.
+-**Vision Encoder:** CLIP ViT-B/16 features for images.
+-**Self-/Cross-Attention:** Transformer attention mechanisms within encoder/decoder.
+-**Decoder:** Transformer decoder generating captions from fused embeddings.
+-**Beam Search / Length Penalty:** Decoding strategies controlling output quality/length.
+-**Tokenization:** WordPiece/BPE; ensure Arabic-friendly tokenizer for AR runs.
+-**Metrics:** Recall@K (retrieval), BLEU/METEOR/ROUGE-L/CIDEr/SPICE (captioning).
+
 - **Diffusion Model:** A generative model that progressively transforms random noise into coherent data.
 - **Latent Space:** A compressed, abstract representation of data where complex features are captured.
 - **UNet Architecture:** A neural network with an encoder-decoder structure featuring skip connections for better feature preservation.
@@ -70,6 +79,12 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 - **Decoder:** A network component that transforms latent representations back into image space.
 - **Iterative Refinement:** The process of gradually improving the quality of generated data through multiple steps.
 - **Conditional Generation:** The process where outputs are generated based on auxiliary inputs, such as textual descriptions.
+
+### Research Gaps
+-Lack of robust Arabic image–text pairs.
+-EN-centric architectural bias.
+-Tokenization challenges for Arabic morphology.
+
 
 ### Problem Statements
 - **Problem 1:** Achieving high-resolution and detailed images using conventional diffusion models remains challenging.
