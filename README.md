@@ -62,11 +62,17 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 ### Terminologies
 
 -**Text Encoder:** BERT/mBERT-based encoder for text embeddings.
+
 -**Vision Encoder:** CLIP ViT-B/16 features for images.
+
 -**Self-/Cross-Attention:** Transformer attention mechanisms within encoder/decoder.
+
 -**Decoder:** Transformer decoder generating captions from fused embeddings.
+
 -**Beam Search / Length Penalty:** Decoding strategies controlling output quality/length.
+
 -**Tokenization:** WordPiece/BPE; ensure Arabic-friendly tokenizer for AR runs.
+
 -**Metrics:** Recall@K (retrieval), BLEU/METEOR/ROUGE-L/CIDEr/SPICE (captioning).
 
 - **Diffusion Model:** A generative model that progressively transforms random noise into coherent data.
