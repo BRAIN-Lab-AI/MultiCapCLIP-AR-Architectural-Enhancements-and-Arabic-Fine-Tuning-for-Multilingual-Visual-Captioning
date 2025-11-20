@@ -1,4 +1,4 @@
-# MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning
+# MultiCapCLIP-AR: Architectural Enhancements and Arabic Fine-Tuning for Multilingual Visual Captioning
 
 ## Project Metadata
 ### Authors
@@ -7,8 +7,8 @@
 - **Affiliations:** KFUPM
 
 ## Introduction
-In recent years, vision-language models like CLIP have made significant progress in integrating text and images.  They excel particularly in zero-shot transfer and image-text retrieval. Their capacity to generalize across languages is, however, limited because they have received nearly all of their training on English captions. To close this gap, MultiCapCLIP was developed, which aligns photos with multilingually translated captions to create a common multilingual semantic space.
-This project expands MultiCapCLIP to include Arabic, a morphologically rich language spoken by over 400 million people worldwide, which remains underrepresented in multimodal AI research. In Addition, this work proposes a modified architecture by adding an extra self-attention layer to the text encoder, enabling a more efficient capture of Arabic syntactic structures. This modification is designed to enhance the semantic alignment between Arabic captions and image embeddings, to reduce the performance gap with English.
+Vision-language models like CLIP have made significant progress in integrating text and images, excelling at zero-shot transfer and image-text retrieval. Building on models like MultiCapCLIP, which extends CLIP to multilingual contexts, this project introduces a modified architecture featuring a supervised attention bridge. This enhanced model is trained on the COCO dataset, and its zero-shot image-text retrieval capabilities are evaluated on the Flickr30k dataset. The supervised attention bridge is designed to enhance semantic alignment between text captions and image embeddings, thereby improving performance over the baseline MultiCapCLIP model.
+
 
 ## Problem Statement
 The accuracy of CLIP and related multilingual models declines significantly when processing Arabic captions, despite strong results on English-centric datasets. This performance gap is primarily due to the scarcity of high-quality annotated Arabic image–text pairs, the morphological complexity of the Arabic language, and the architectural bias of most models toward English syntax. As a result, the reliability of Arabic retrieval tasks is reduced, which limits the practical deployment of these models in real-world applications across the MENA region.
