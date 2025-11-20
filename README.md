@@ -1,4 +1,4 @@
-# MultiCapCLIP-AR: Architectural Enhancements and Arabic Fine-Tuning for Multilingual Visual Captioning
+# MultiCapCLIP-SAB: A Supervised Attention Bridge for Enhanced Visual-Language Grounding
 
 ## Project Metadata
 ### Authors
