@@ -7,7 +7,11 @@
 - **Affiliations:** KFUPM
 
 ## Introduction
-Vision-language models like CLIP have made significant progress in integrating text and images, excelling at zero-shot transfer and image-text retrieval. Building on models like MultiCapCLIP, which extends CLIP to multilingual contexts, this project introduces a modified architecture featuring a supervised attention bridge. This enhanced model is trained on the COCO dataset, and its zero-shot image-text retrieval capabilities are evaluated on the Flickr30k dataset. The supervised attention bridge is designed to enhance semantic alignment between text captions and image embeddings, thereby improving performance over the baseline MultiCapCLIP model.
+Vision–language models have made significant strides in linking text and images, with CLIP becoming an important tool for learning new tasks without additional training and for finding matches between images and text. CLIP is trained on lots of data, so it can work well in new situations without special instructions. MultiCapCLIP improves on CLIP by allowing captions in multiple languages and generating text from idea prompts based on image features. But because the connection between vision and language is not explicitly taught, the model struggles to match image details to the right words.
+
+To address this problem, this work introduces a better design that adds a Supervised Attention Bridge (SAB), a specialized module trained to match images and captions. Unlike the original MultiCapCLIP, which only trains on text and uses prompt auto-encoding, the SAB directly learns to connect CLIP’s image parts to the part of the model that creates text. This method better matches image details with text while maintaining a strong ability to handle new tasks without extra training.
+
+The MultiCapCLIP-SAB model is trained on the MS COCO dataset and tested in a strict zero-shot setting on Flickr30k. By directly supervising the link between vision and language, this architecture is expected to improve both image-text retrieval and caption consistency. This change aims to address the limits of concept-prompt–based mappings and make multilingual visual captioning systems more robust, general, and interpretable.
 
 
 ## Problem Statement
