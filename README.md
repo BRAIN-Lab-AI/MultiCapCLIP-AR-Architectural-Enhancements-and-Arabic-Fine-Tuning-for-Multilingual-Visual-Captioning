@@ -11,18 +11,33 @@ Vision-language models like CLIP have made significant progress in integrating t
 
 
 ## Problem Statement
-The accuracy of CLIP and related multilingual models declines significantly when processing Arabic captions, despite strong results on English-centric datasets. This performance gap is primarily due to the scarcity of high-quality annotated Arabic image–text pairs, the morphological complexity of the Arabic language, and the architectural bias of most models toward English syntax. As a result, the reliability of Arabic retrieval tasks is reduced, which limits the practical deployment of these models in real-world applications across the MENA region.
-To address these challenges, my project enhances MultiCapCLIP using Arabic COCO captions and incorporates an additional attention layer into the text encoder. This modification aims to reduce the performance gap between Arabic and English in multimodal tasks by enabling the model to better capture Arabic-specific semantic relationships.
+The zero-shot captioning approach of MultiCapCLIP, which learns from text-only data, is powerful but relies on an indirect connection between vision and language mediated by "concept prompts." This can limit the model's ability to capture fine-grained visual details, as the mapping from image to concepts is not explicitly trained. The core challenge is to improve this visual-semantic alignment without sacrificing the model's zero-shot generalization capabilities.
+
+To address this, our project introduces a key architectural enhancement: a supervised attention bridge. This multi-layer Transformer network is trained directly on image-caption pairs to learn an explicit mapping from CLIP's visual patch features to the representational space of the language decoder. The hypothesis is that by supervising this connection, the model can learn a much richer and more detailed visual grounding, which will translate to higher-quality captions, especially in a zero-shot setting on unseen datasets.
 
 ## Application Area and Project Domain
-With an emphasis on cross-lingual retrieval—the process of matching images with captions in several languages—this effort falls under the umbrella of multimodal AI and vision–language models. By focusing on Arabic, I aim to bridge a significant support gap for low-resource yet highly influential languages and contribute to the development of AI systems that are more inclusive and globally relevant.
-Applications include Arabic-focused educational resources, multilingual search engines, and regional AI services for digital media, government, and healthcare in the MENA area. Enhancing image-caption retrieval in Arabic could provide millions of Arabic speakers with access to state-of-the-art AI, aligning AI innovation with local linguistic and cultural requirements.
+This work advances the state-of-the-art in multimodal AI by proposing a hybrid approach that combines the strengths of large-scale, pre-trained models with targeted, supervised training of a lightweight bridge component. The project focuses on enhancing zero-shot visual captioning, aiming to create a model that is both highly accurate and adaptable to new domains.
+
+This improved architecture has significant practical applications. It can enable more precise automated content description for e-commerce and media, generate more descriptive and accurate captions for accessibility tools, and improve the visual grounding of conversational AI. By creating a more effective bridge between vision and language, this project paves the way for more reliable and capable multimodal systems that can be deployed with greater confidence in real-world scenarios.
+
 
 ## What is the paper trying to do, and what are you planning to do?
-The original MultiCapCLIP paper extends CLIP to the multilingual setting by aligning images with multiple translated captions. This approach enables the model to generalize to languages beyond English and supports cross-lingual retrieval tasks without dependence on external machine translation during inference.
+The original MultiCapCLIP paper introduces a framework for zero-shot captioning using text-only training. While innovative, its reliance on concept prompts creates an indirect link between the image and the generated text.
 
-In this project, we reproduce the MultiCapCLIP approach with a focus on Arabic captions from the COCO dataset. We also introduce an additional attention layer to the text encoder to better capture linguistic nuances in Arabic. We compare three models: baseline CLIP (English only), MultiCapCLIP (with Arabic captions), and MultiCapCLIP with the added attention layer. Their performance is evaluated using retrieval and captioning metrics, including Recall@K, BLEU, METEOR, ROUGE, and CIDEr. Our main goal is to evaluate whether these architectural enhancements improve Arabic cross-lingual retrieval.
-.
+In this project, we enhance the MultiCapCLIP framework by integrating a Supervised Attention Bridge (SAB). Our plan is to create a more powerful captioning model through a two-stage process:
+
+1.**Component Foundation:** We start with the core components of MultiCapCLIP: a frozen CLIP vision encoder and a pre-trained multilingual decoder (like mBART).
+
+2.**Supervised Bridge Training:** We introduce and train our Supervised Attention Bridge. This bridge is a Transformer-based network that takes the visual patch features from CLIP and learns to transform them into a sequence of embeddings that the language decoder can directly use as its encoder context. This bridge is the only component trained, using supervised image-caption pairs from the COCO dataset.
+
+Our primary goal is to evaluate if this architectural enhancement improves zero-shot captioning performance. We will compare two models:
+
+1.**Baseline MultiCapCLIP:** The original model that uses concept prompts, trained on text-only data.
+
+2.**MultiCapCLIP-SAB (Ours):** Our enhanced model featuring the supervised attention bridge.
+
+Both models will be evaluated on the Flickr30k dataset in a strict zero-shot setting (i.e., without any fine-tuning on Flickr30k). Performance will be measured using standard captioning metrics (BLEU, METEOR, ROUGE, CIDEr) and retrieval metrics (Recall@K). This experiment will demonstrate whether the supervised training of the bridge component leads to better generalization on a completely unseen dataset.
+
 
 
 # THE FOLLOWING IS SUPPOSED TO BE DONE LATER
@@ -61,41 +76,31 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 
 ### Terminologies
 
--**Text Encoder:** BERT/mBERT-based encoder for text embeddings.
+-**Vision Encoder:** A frozen CLIP ViT-B/16 model that extracts patch-level visual features from an image.
+-**Text Encoder:** The text encoder from a pre-trained multilingual model like mBART, used to create text embeddings.
+-**Decoder:**  A frozen, pre-trained multilingual decoder (e.g., mBART) that generates captions from a sequence of embeddings.
+-**Supervised Attention Bridge (SAB):** A multi-layer Transformer network that is trained to map the visual features from the Vision Encoder to the input space of the Decoder. This is the core architectural enhancement.
+-**Zero-Shot Evaluation:** The process of evaluating a model on a dataset (e.g., Flickr30k) that it has never seen during its training phase (which was done on COCO).
+-**Metrics:** Recall@K (for retrieval evaluation) and BLEU, METEOR, ROUGE-L, CIDEr (for captioning evaluation).
 
--**Vision Encoder:** CLIP ViT-B/16 features for images.
-
--**Self-/Cross-Attention:** Transformer attention mechanisms within encoder/decoder.
-
--**Decoder:** Transformer decoder generating captions from fused embeddings.
-
--**Beam Search / Length Penalty:** Decoding strategies controlling output quality/length.
-
--**Tokenization:** WordPiece/BPE; ensure Arabic-friendly tokenizer for AR runs.
-
--**Metrics:** Recall@K (retrieval), BLEU/METEOR/ROUGE-L/CIDEr/SPICE (captioning).
-
-- **Diffusion Model:** A generative model that progressively transforms random noise into coherent data.
-- **Latent Space:** A compressed, abstract representation of data where complex features are captured.
-- **UNet Architecture:** A neural network with an encoder-decoder structure featuring skip connections for better feature preservation.
-- **Text Encoder:** A model that converts text into numerical embeddings for downstream tasks.
-- **Perceptual Loss:** A loss function that measures high-level differences between images, emphasizing perceptual similarity.
-- **Tokenization:** The process of breaking down text into smaller units (tokens) for processing.
-- **Noise Vector:** A randomly generated vector used to initialize the diffusion process in generative models.
-- **Decoder:** A network component that transforms latent representations back into image space.
-- **Iterative Refinement:** The process of gradually improving the quality of generated data through multiple steps.
-- **Conditional Generation:** The process where outputs are generated based on auxiliary inputs, such as textual descriptions.
 
 ### Research Gaps
--Lack of robust Arabic image–text pairs.
--EN-centric architectural bias.
--Tokenization challenges for Arabic morphology.
+-**Indirect Vision-Language Connection:** The original MultiCapCLIP relies on an indirect connection via "concept prompts," which can act as a bottleneck and prevent fine-grained understanding of visual details.
+
+-**Lack of Explicit Visual Grounding:** The text-only training of the original model means it never explicitly learns to ground parts of a caption to specific regions of an image.
+
+-**Performance Ceiling of Zero-Shot Methods:** Purely zero-shot models often lag behind supervised models in caption quality because they lack targeted training on paired image-text data.
+
 
 
 ### Problem Statements
-- **Problem 1:** Achieving high-resolution and detailed images using conventional diffusion models remains challenging.
-- **Problem 2:** Existing models suffer from slow inference times during the image generation process.
-- **Problem 3:** There is limited capability in performing style transfer and generating diverse artistic variations.
+-**Problem 1:** The quality of generated captions in zero-shot models is limited by the coarse and indirect mapping between visual input and textual output.
+
+-**Problem 2:** Existing models struggle to generalize effectively to unseen datasets in a zero-shot manner, showing a significant performance drop compared to their performance on in-domain data.
+
+-**Problem 3:** There is a need for an architecture that can leverage the strengths of large pre-trained models (like CLIP and mBART) while allowing for targeted, efficient, and supervised enhancement of the vision-language connection.
+
+
 
 ### Loopholes or Research Areas
 - **Evaluation Metrics:** Lack of robust metrics to effectively assess the quality of generated images.
@@ -103,38 +108,70 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 - **Computational Resources:** Training requires significant GPU compute resources, which may not be readily accessible.
 
 ### Problem vs. Ideation: Proposed 3 Ideas to Solve the Problems
-1. **Optimized Architecture:** Redesign the model architecture to improve efficiency and balance image quality with faster inference.
-2. **Advanced Loss Functions:** Integrate novel loss functions (e.g., perceptual loss) to better capture artistic nuances and structural details.
-3. **Enhanced Data Augmentation:** Implement sophisticated data augmentation strategies to improve the model’s robustness and reduce overfitting.
+1. **Hybrid Training Strategies:** Investigating the optimal balance between unsupervised pre-training and lightweight supervised fine-tuning of specific components like the bridge.
+
+2.**Bridge Architecture Exploration:** The design of the attention bridge (number of layers, attention heads, query tokens) is a key area for research to find the most effective and efficient configuration.
+
+3.**Cross-Dataset Generalization:** Developing more robust evaluation protocols to measure a model's true ability to generalize to diverse, unseen visual domains and styles.
+
+
+
+1.Introduce a Supervised Attention Bridge: Instead of relying on indirect concept prompts, we propose a dedicated Transformer-based network that directly learns to map CLIP visual features to the language decoder's input space.
+
+2.Adopt a Hybrid Training Approach: We will keep the powerful, large-scale vision and language models frozen, and only train the lightweight bridge component. This is computationally efficient and reduces the risk of catastrophic forgetting.
+
+3.Implement Strict Zero-Shot Evaluation: To prove the generalization power of our approach, we will train the model exclusively on the COCO dataset and evaluate its performance on the completely unseen Flickr30k dataset, ensuring a fair and challenging test of its capabilities.
+
+
+
 
 ### Proposed Solution: Code-Based Implementation
-This repository provides an implementation of the enhanced stable diffusion model using PyTorch. The solution includes:
+This repository provides an implementation of MultiCapCLIP-SAB, a model that enhances the MultiCapCLIP framework with a supervised attention bridge. The solution includes:
 
-- **Modified UNet Architecture:** Incorporates residual connections and efficient convolutional blocks.
-- **Novel Loss Functions:** Combines Mean Squared Error (MSE) with perceptual loss to enhance feature learning.
-- **Optimized Training Loop:** Reduces computational overhead while maintaining performance.
+-**Frozen Pre-trained Models:** Utilizes frozen CLIP ViT-B/16 for vision encoding and a frozen mBART for multilingual caption decoding.
+
+-**Supervised Attention Bridge:** A trainable, multi-layer Transformer network that connects the vision and language models.
+
+-**Targeted Training Loop:** A PyTorch-based training script that exclusively trains the attention bridge on paired image-caption data from the COCO dataset.
+
+
 
 ### Key Components
-- **`model.py`**: Contains the modified UNet architecture and other model components.
-- **`train.py`**: Script to handle the training process with configurable parameters.
-- **`utils.py`**: Utility functions for data processing, augmentation, and metric evaluations.
-- **`inference.py`**: Script for generating images using the trained model.
+-**'train_supervised_attention_bridge.py':** The main script for training the attention bridge on the COCO dataset. It handles data loading, model setup, and the training loop.
+
+-**'model.py / bridge.py':** Contains the implementation of the AttentionBridge network, including the Transformer layers and cross-attention pooling mechanism.
+
+-**'dataset.py':** Utility script for creating the COCO image-caption dataset, preparing images and tokenizing captions.
+
+-**'evaluate.py':** Script for performing zero-shot evaluation on the Flickr30k dataset, calculating captioning and retrieval metrics.
+
+
 
 ## Model Workflow
-The workflow of the Enhanced Stable Diffusion model is designed to translate textual descriptions into high-quality artistic images through a multi-step diffusion process:
+The workflow of the MultiCapCLIP-SAB model is as follows:
 
-1. **Input:**
-   - **Text Prompt:** The model takes a text prompt (e.g., "A surreal landscape with mountains and rivers") as the primary input.
-   - **Tokenization:** The text prompt is tokenized and processed through a text encoder (such as a CLIP model) to obtain meaningful embeddings.
-   - **Latent Noise:** A random latent noise vector is generated to initialize the diffusion process, which is then conditioned on the text embeddings.
+1.**Input:**
 
-2. **Diffusion Process:**
-   - **Iterative Refinement:** The conditioned latent vector is fed into a modified UNet architecture. The model iteratively refines this vector by reversing a diffusion process, gradually reducing noise while preserving the text-conditioned features.
-   - **Intermediate States:** At each step, intermediate latent representations are produced that increasingly capture the structure and details dictated by the text prompt.
+•*Image:* An input image is fed into the frozen CLIP vision encoder.
 
-3. **Output:**
-   - **Decoding:** The final refined latent representation is passed through a decoder (often part of a Variational Autoencoder setup) to generate the final image.
-   - **Generated Image:** The output is a synthesized image that visually represents the input text prompt, complete with artistic style and detail.
+•*Visual Features:* CLIP extracts a sequence of patch features (e.g., [batch, 50, 512]).
+
+
+
+2.**Bridge Processing:**
+
+•*Mapping:* The visual patch features are passed to the Supervised Attention Bridge.
+
+•*Transformation:* The bridge, which has been trained on COCO, processes these features through its self-attention layers and cross-attention pooling to produce a fixed-length sequence of embeddings (e.g., [batch, 8, 1024]) that are now in the language model's representational space.
+
+
+
+3.**Caption Generation:**
+
+•*Decoding:* The embeddings from the bridge are fed as the encoder output to the frozen mBART decoder.
+
+•*Generated Caption:* The decoder uses these conditioned embeddings to generate a descriptive caption for the image in a zero-shot manner.
+
 
 ## How to Run the Code
 
