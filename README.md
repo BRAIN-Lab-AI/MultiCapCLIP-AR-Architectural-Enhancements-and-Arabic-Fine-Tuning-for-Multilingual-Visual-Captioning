@@ -206,6 +206,8 @@ The workflow of the MultiCapCLIP-SAB model is as follows:
     ```
 
 ## Acknowledgments
-- **Open-Source Communities:** Thanks to the contributors of PyTorch, Hugging Face, and other libraries for their amazing work.
-- **Individuals:** Special thanks to bla, bla, bla for the amazing team effort, invaluable guidance and support throughout this project.
-- **Resource Providers:** Gratitude to ABC-organization for providing the computational resources necessary for this project.
+- **Open-Source Communities:** I acknowledge the open-source contributors behind PyTorch, Hugging Face Transformers, OpenAI CLIP, and the Python ecosystem (NumPy, PIL, torchvision), whose tools formed the foundation of this project.
+
+- **Individuals:** Special thanks to Dr. Muzammil Behzad for his guidance and continuous support. I am also grateful to my family and friends for their encouragement throughout this work.
+
+- **Resource Providers:** I appreciate the computational support provided by Google Colab and the storage services of Google Drive. I also acknowledge the creators of the MS COCO and Flickr30k datasets for making high-quality vision–language data available.
