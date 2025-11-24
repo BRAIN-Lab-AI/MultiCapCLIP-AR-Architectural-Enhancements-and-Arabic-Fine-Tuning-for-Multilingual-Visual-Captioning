@@ -184,7 +184,7 @@ The workflow of the MultiCapCLIP-SAB model is as follows:
     git clone https://github.com/yourusername/enhanced-stable-diffusion.git
     cd enhanced-stable-diffusion
     ```
-
+!python /content/drive/MyDrive/MultiCapCLIP/train_supervised_attention_bridge.py
 2. **Set Up the Environment:**
     Create a virtual environment and install the required dependencies.
     ```bash
