@@ -1,0 +1,54 @@
+{
+  "experiment_name": "bla_multicapclip_baseline",
+  "output_dir": "outputs/bla_multicapclip",
+
+  "optimizer": "adamw",
+  "learning_rate": 1e-4,
+  "weight_decay": 0.01,
+  "num_epochs": 20,
+  "bridge_pretrain_epochs": 3,
+  "batch_size": 32,
+  "max_grad_norm": 1.0,
+  "use_scheduler": true,
+  "log_interval": 100,
+  "save_interval": 1,
+
+  "data": {
+    "train_images": "/content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/train2014",
+    "val_images": "/content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/val2014",
+    "train_ann": "/content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations/captions_train2014.json",
+    "val_ann": "/content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations/captions_val2014.json",
+    "max_caption_length": 20,
+    "num_workers": 0,
+    "image_size": 224
+  },
+
+  "model": {
+    "dim": 768,
+    "hidden_dim": 1024,
+    "num_heads": 8,
+    "num_prompts": 16,
+    "dropout": 0.1,
+    "adaptive": false
+  },
+
+  "decoder": {
+    "pretrained_id": "facebook/mbart-large-50"
+  },
+
+  "max_tokens": 40,
+
+  "generation": {
+    "max_length": 20,
+    "num_beams": 3,
+    "temperature": 1.0,
+    "top_k": 50,
+    "top_p": 0.9
+  },
+
+  "hardware": {
+    "device": "cuda",
+    "mixed_precision": true,
+    "num_gpus": 1
+  }
+}
