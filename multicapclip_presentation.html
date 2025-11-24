@@ -415,30 +415,40 @@
 
         <!-- NEW Slide 8: SAB Details -->
         <div class="slide">
-            <div class="slide-header">
-                <h2 class="slide-title">Supervised Attention Bridge: Layer Design</h2>
-            </div>
-            <div class="two-column">
-                <div class="content-section">
-                    <h3>Bridge Layers & Components</h3>
-                    <ul class="bullet-list">
-                        <li><strong>Input Projection Layer:</strong> CLIP patch embeddings are first normalized and linearly projected into a bridge-specific hidden space, preparing them for transformer processing.</li>
-                        <li><strong>Stack of Transformer Blocks:</strong> Each SAB layer consists of multi-head self-attention, a position-wise feed-forward network (MLP with non-linearity), residual connections, and layer normalization.</li>
-                        <li><strong>Query Token Module:</strong> A small set of learnable query tokens attends over all patch tokens, aggregating fine-grained visual evidence into compact semantic vectors.</li>
-                        <li><strong>Output Mapping:</strong> The final bridge outputs are projected into the decoder embedding space so that mBART can treat them as prefix tokens for caption generation.</li>
-                    </ul>
+    <div class="slide-header">
+        <h2 class="slide-title">Supervised Attention Bridge: Layer Design</h2>
+    </div>
+    <div class="two-column">
+        <div class="content-section">
+            <h3>Bridge Layers & Components</h3>
+            <ul class="bullet-list">
+                <li><strong>Input Projection (1 layer):</strong> A linear layer maps CLIP patch embeddings from <code>512</code> to the mBART space <code>1024</code>, aligning visual features with the decoder embedding dimension.</li>
+                <li><strong>Transformer Encoder Stack (4 layers):</strong> A stack of <strong>4</strong> transformer encoder blocks, each with <strong>8-head</strong> self-attention, a <strong>2048-dim</strong> feed-forward network, residual connections, layer normalization, and <code>0.1</code> dropout to refine patch-level interactions.</li>
+                <li><strong>Learnable Bridge Tokens (32 queries):</strong> A set of <strong>32</strong> learnable query tokens (<code>num_bridge_tokens = 32</code>) attend over all visual tokens, acting as semantic anchors that aggregate fine-grained information into compact representations.</li>
+                <li><strong>Cross-Attention Pooling:</strong> A multi-head attention layer (<strong>8 heads</strong>) uses the queries as <em>Q</em> and the refined CLIP tokens as <em>K,V</em>, producing <strong>32 bridge tokens</strong> aligned with mBART’s input space.</li>
+                <li><strong>Output Normalization:</strong> A final layer normalization ensures stable scaling of the bridge outputs before they are passed to mBART as prefix tokens for caption generation.</li>
+            </ul>
+        </div>
+        <div class="content-section">
+            <h3>Training & Inference Flow</h3>
+            <div class="image-box">
+                <img src="methodology.png" alt="SAB training and inference flow diagram">
+                <div class="image-caption">
+                    Input image → frozen CLIP encoder → 4-layer SAB with 32 query tokens → mBART decoder.
+                    During training, the caption loss is backpropagated through the bridge only; at inference, the
+                    trained bridge is reused without fine-tuning CLIP or mBART.
                 </div>
-                <div class="content-section">
-                    <h3>Training Flow</h3>
-                    <div class="image-box">
-                        <img src="methodology.png" alt="MultiCapCLIP-SAB Flow Diagram">
-                        <div class="image-caption">
-                            Training loop: input image → CLIP encoder → SAB → mBART decoder → loss calculation → backpropagation through the bridge only; inference reuses the trained bridge without fine-tuning CLIP or mBART.
-                        </div>
-                    </div>
+            </div>
+            <div class="image-box">
+                <img src="train_bridge.png" alt="Train vs Validation loss for SAB training">
+                <div class="image-caption">
+                    Train vs validation loss across 20 epochs illustrates that the bridge continues to learn,
+                    while the validation curve saturates, highlighting the impact of limited COCO supervision.
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Slide 9: Training Methodology -->
         <div class="slide">
