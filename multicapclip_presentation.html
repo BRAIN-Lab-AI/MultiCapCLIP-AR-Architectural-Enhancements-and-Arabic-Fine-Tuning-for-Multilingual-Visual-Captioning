@@ -526,12 +526,12 @@
             </div>
         </div>
 
-        <!-- NEW Slide 11: Results & Ablation Visual Summary -->
+        <!-- Slide 11: Results & Ablation Visual Summary -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Results & Ablation Study: Visual Summary</h2>
             </div>
-            <div class="two-column">
+            <div class="slide-header">
                 <div class="content-section">
                     <div class="image-box">
                         <img src="metrics.png" alt="Flickr30k captioning metrics: Baseline vs SAB">
@@ -545,15 +545,6 @@
                             Training vs validation loss across epochs: the bridge continues to learn, while the validation curve flattens and slightly increases, indicating the need for more data or stronger regularization.
                         </div>
                     </div>
-                </div>
-                <div class="content-section">
-                    <h3>Ablation Insights</h3>
-                    <ul class="bullet-list">
-                        <li><strong>Query Tokens:</strong> Removing learnable queries leads to generic, under-grounded captions, confirming their role in aggregating detailed patch information.</li>
-                        <li><strong>SAB vs Linear Bridge:</strong> The transformer-based bridge captures richer cross-modal relationships than a single linear layer, even when BLEU scores are constrained by limited supervision.</li>
-                        <li><strong>Training Dynamics:</strong> Longer training stabilizes the bridge, but the loss curves suggest that scaling the dataset is more beneficial than simply adding epochs.</li>
-                        <li><strong>Practical Takeaway:</strong> SAB provides a more semantically faithful mapping from CLIP patches to mBART tokens, and the visual metrics help diagnose where future improvements should target.</li>
-                    </ul>
                 </div>
             </div>
         </div>
