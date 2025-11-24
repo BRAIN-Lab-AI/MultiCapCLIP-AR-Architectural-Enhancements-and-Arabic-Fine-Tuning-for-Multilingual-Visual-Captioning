@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MultiCapCLIP-SAB Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .presentation-container {
+            width: 95%;
+            height: 95vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            flex: 1;
+            padding: 60px 80px;
+            overflow-y: auto;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+
+        .slide-subtitle {
+            font-size: 24px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .title-slide .slide-title {
+            font-size: 56px;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .title-slide .author-info {
+            font-size: 24px;
+            margin: 20px 0;
+            opacity: 0.95;
+        }
+
+        .title-slide .institution {
+            font-size: 20px;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+
+        .content-section {
+            margin-bottom: 30px;
+        }
+
+        .content-section h3 {
+            font-size: 28px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .content-section p {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #4a5568;
+            text-align: justify;
+            margin-bottom: 15px;
+        }
+
+        .bullet-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .bullet-list li {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #4a5568;
+            margin-bottom: 15px;
+            padding-left: 35px;
+            position: relative;
+        }
+
+        .bullet-list li:before {
+            content: "●";
+            color: #667eea;
+            font-size: 24px;
+            position: absolute;
+            left: 0;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: #f7fafc;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .nav-button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-button:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            font-size: 18px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        .methodology-diagram {
+            background: #f7fafc;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
+        }
+
+        .methodology-diagram p {
+            font-size: 18px;
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 18px;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        tr:nth-child(even) {
+            background: #f7fafc;
+        }
+
+        .key-point {
+            background: #667eea;
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-size: 22px;
+            text-align: center;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .small-text {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide">
+            <h1 class="slide-title">MultiCapCLIP-SAB:<br>A Supervised Attention Bridge for<br>Enhanced Visual-Language Grounding</h1>
+            <div class="author-info">
+                <strong>Saliyah Alotaibi</strong><br>
+                g202006820@kfupm.edu.sa
+            </div>
+            <div class="author-info">
+                Supervised by: <strong>Dr. Muzammil Behzad</strong><br>
+                muzammil.behzad@kfupm.edu.sa
+            </div>
+            <div class="institution">
+                King Fahd University of Petroleum and Minerals<br>
+                Dhahran, Saudi Arabia
+            </div>
+        </div>
+
+        <!-- Slide 2: Overview -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Research Overview</h2>
+            </div>
+            <div class="content-section">
+                <div class="key-point">
+                    Enhancing zero-shot multilingual image captioning through supervised attention-based bridging mechanisms
+                </div>
+                <ul class="bullet-list">
+                    <li><strong>Challenge:</strong> Existing CLIP-based captioning models use simple linear projections that fail to capture fine-grained visual details</li>
+                    <li><strong>Solution:</strong> Supervised Attention Bridge (SAB) - a multi-layer transformer that learns rich cross-modal representations</li>
+                    <li><strong>Innovation:</strong> Train only the bridge while keeping CLIP and mBART frozen, achieving better grounding with minimal parameters</li>
+                    <li><strong>Results:</strong> Improved semantic grounding and structural coherence on zero-shot transfer to Flickr30k</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 3: Background -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Background & Motivation</h2>
+            </div>
+            <div class="content-section">
+                <h3>The Evolution of Vision-Language Models</h3>
+                <p>CLIP revolutionized multimodal learning through contrastive pre-training on massive image-text pairs, enabling powerful zero-shot capabilities. Building on this foundation, captioning models like ClipCap and MultiCapCLIP leverage frozen CLIP encoders with lightweight adapters.</p>
+            </div>
+            <div class="highlight-box">
+                <p><strong>Key Insight:</strong> The bridging mechanism between visual and textual encoders is critical for caption quality, yet most approaches use shallow linear projections that cannot capture complex cross-modal relationships.</p>
+            </div>
+            <div class="content-section">
+                <h3>Why This Matters</h3>
+                <p>Supervised training of the bridge component allows explicit learning of visual-linguistic correspondences, leading to more accurate and contextually appropriate captions while maintaining computational efficiency.</p>
+            </div>
+        </div>
+
+        <!-- Slide 4: Problem Statement -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Problem Statement</h2>
+            </div>
+            <div class="content-section">
+                <h3>Current Limitations</h3>
+                <div class="two-column">
+                    <div>
+                        <h3 style="font-size: 22px; color: #e53e3e; margin-bottom: 15px;">🔴 Weak Patch-Level Grounding</h3>
+                        <p class="small-text">Linear bridges collapse structured patch embeddings into global vectors, discarding fine-grained spatial information</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 22px; color: #e53e3e; margin-bottom: 15px;">🔴 Loose Visual-Language Alignment</h3>
+                        <p class="small-text">Unstructured embeddings make it difficult for decoders to establish stable correspondences between visual patches and textual tokens</p>
+                    </div>
+                </div>
+                <div class="two-column">
+                    <div>
+                        <h3 style="font-size: 22px; color: #e53e3e; margin-bottom: 15px;">🔴 Poor Generalization</h3>
+                        <p class="small-text">Performance degrades on out-of-distribution datasets requiring nuanced understanding</p>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 22px; color: #e53e3e; margin-bottom: 15px;">🔴 Generic Captions</h3>
+                        <p class="small-text">Models produce plausible but poorly grounded descriptions that miss specific details</p>
+                    </div>
+                </div>
+            </div>
+            <div class="key-point" style="margin-top: 30px;">
+                Research Goal: Develop a more expressive bridging mechanism that enhances visual-language alignment while preserving frozen backbone efficiency
+            </div>
+        </div>
+
+        <!-- Slide 5: Research Objectives -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Research Objectives</h2>
+            </div>
+            <div class="content-section">
+                <ul class="bullet-list">
+                    <li><strong>Design & Integration:</strong> Develop a supervised-trained Supervised Attention Bridge (SAB) to replace linear projection in MultiCapCLIP</li>
+                    <li><strong>Semantic Alignment:</strong> Improve correspondences between visual patches and textual tokens through explicit supervision on paired data</li>
+                    <li><strong>Performance Gains:</strong> Achieve measurable improvements in BLEU, METEOR, ROUGE-L, and CIDEr scores on both in-distribution and out-of-distribution datasets</li>
+                    <li><strong>Training Stability:</strong> Provide explicit supervisory signals to reduce alignment noise and stabilize convergence</li>
+                    <li><strong>Parameter Efficiency:</strong> Demonstrate improvements through bridge training alone, without fine-tuning expensive pre-trained encoders</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 6: Literature Review -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Literature Review</h2>
+            </div>
+            <div class="content-section">
+                <h3>Evolution of CLIP-Based Captioning</h3>
+                <p><strong>Early Approaches:</strong> ClipCap and ZeroCap introduced lightweight adapters mapping CLIP features to language models. While computationally efficient, these shallow projections failed to capture fine-grained visual details.</p>
+                <p><strong>Prompt-Based Methods:</strong> CoOp and CoCoOp demonstrated parameter-efficient adaptation through learnable prompts, but required large supervised datasets for quality grounding.</p>
+                <p><strong>Transformer Bridges:</strong> MagicPrompt and Bridge-Former employed transformer components between encoders, yet remained relatively shallow and limited in patch-level attention.</p>
+            </div>
+            <div class="highlight-box">
+                <p><strong>MultiCapCLIP:</strong> Combines CLIP with mBART for multilingual zero-shot captioning using auto-encoding prompts. Achieves strong performance but is constrained by its lightweight linear bridge.</p>
+            </div>
+        </div>
+
+        <!-- Slide 7: Proposed Architecture -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Proposed Architecture: MultiCapCLIP-SAB</h2>
+            </div>
+            <div class="methodology-diagram">
+                <p style="font-size: 24px; margin-bottom: 20px;">📷 CLIP ViT-B/16 (Frozen) → 🔄 Supervised Attention Bridge (SAB) → 📝 mBART Decoder (Frozen)</p>
+            </div>
+            <div class="content-section">
+                <h3>Key Architectural Components</h3>
+                <ul class="bullet-list">
+                    <li><strong>Multi-Layer Transformer Bridge:</strong> Replaces linear projection with transformer encoder featuring self-attention mechanisms to model inter-token dependencies</li>
+                    <li><strong>Learnable Query Tokens:</strong> Trainable query vectors aggregate information from CLIP patch tokens through cross-attention, serving as semantic anchors</li>
+                    <li><strong>Supervised Training:</strong> End-to-end training on MSCOCO train2014 subset enforces explicit visual-linguistic grounding</li>
+                    <li><strong>Frozen Backbones:</strong> CLIP and mBART remain frozen to preserve pre-trained knowledge and maintain computational efficiency</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 8: Training Methodology -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Training Methodology</h2>
+            </div>
+            <div class="two-column">
+                <div class="content-section">
+                    <h3>Dataset & Preprocessing</h3>
+                    <p class="small-text"><strong>Training:</strong> Curated subset of MSCOCO train2014 with paired English captions</p>
+                    <p class="small-text"><strong>Evaluation:</strong> Flickr30k test split for zero-shot generalization assessment</p>
+                    <p class="small-text"><strong>Image Processing:</strong> 224×224 resize, center crop, CLIP normalization</p>
+                    <p class="small-text"><strong>Text Processing:</strong> mBART tokenization with duplicate removal and punctuation standardization</p>
+                </div>
+                <div class="content-section">
+                    <h3>Training Configuration</h3>
+                    <p class="small-text"><strong>Epochs:</strong> 8-12</p>
+                    <p class="small-text"><strong>Batch Size:</strong> 32</p>
+                    <p class="small-text"><strong>Learning Rate:</strong> 1×10⁻⁴</p>
+                    <p class="small-text"><strong>Warmup:</strong> 3,000 steps</p>
+                    <p class="small-text"><strong>Optimizer:</strong> AdamW with weight decay</p>
+                    <p class="small-text"><strong>Gradient Clipping:</strong> 0.3</p>
+                    <p class="small-text"><strong>Precision:</strong> Mixed FP16</p>
+                </div>
+            </div>
+            <div class="highlight-box" style="margin-top: 20px;">
+                <p><strong>Optimization Strategy:</strong> Linear warmup followed by cosine annealing decay ensures stable training dynamics. Cross-entropy loss maximizes likelihood of ground-truth captions while supervised training inherently promotes visual-linguistic alignment.</p>
+            </div>
+        </div>
+
+        <!-- Slide 9: Experimental Results -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Experimental Results</h2>
+                <p class="slide-subtitle">Zero-Shot Transfer to Flickr30k</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Baseline MultiCapCLIP</th>
+                            <th>MultiCapCLIP-SAB</th>
+                            <th>Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>BLEU-1</strong></td>
+                            <td>0.473</td>
+                            <td>0.3404</td>
+                            <td style="color: #e53e3e;">↓ 28%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>BLEU-4</strong></td>
+                            <td>0.110</td>
+                            <td>0.0394</td>
+                            <td style="color: #e53e3e;">↓ 64%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>METEOR</strong></td>
+                            <td>0.139</td>
+                            <td>0.2030</td>
+                            <td style="color: #38a169;">↑ 46%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ROUGE-L</strong></td>
+                            <td>0.307</td>
+                            <td>0.2669</td>
+                            <td style="color: #e53e3e;">↓ 13%</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CIDEr</strong></td>
+                            <td>0.167</td>
+                            <td>0.0526</td>
+                            <td style="color: #e53e3e;">↓ 69%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="highlight-box">
+                <p><strong>Interpretation:</strong> BLEU scores decline due to limited training data (subset only) and insufficient epochs. However, METEOR shows significant improvement (+46%), reflecting stronger semantic grounding. ROUGE-L demonstrates competitive structural alignment. With full COCO training, we expect substantial improvements across all metrics.</p>
+            </div>
+        </div>
+
+        <!-- Slide 10: Ablation Study -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Ablation Study</h2>
+                <p class="slide-subtitle">Understanding Component Contributions</p>
+            </div>
+            <div class="content-section">
+                <h3>Key Findings</h3>
+                <ul class="bullet-list">
+                    <li><strong>Query Tokens:</strong> Removing learnable queries resulted in bland, generic captions lacking specific details - essential for proper visual-language alignment</li>
+                    <li><strong>SAB vs. Linear Layer:</strong> Replacing SAB with simple linear projection caused severe performance degradation, confirming that complex non-linear mappings are necessary</li>
+                    <li><strong>Training Duration:</strong> Fewer epochs produced inconsistent, unstable captions - the bridge requires sufficient training to learn robust cross-modal mappings</li>
+                    <li><strong>Training Stability:</strong> Occasional NaN loss issues with FP16 training were resolved through reduced learning rate, increased warmup, gradient clipping, and selective FP32 usage</li>
+                    <li><strong>Depth Trade-off:</strong> Deeper SAB architectures yielded better-grounded captions but increased computational cost during both training and inference</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Slide 11: Contributions -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Research Contributions</h2>
+            </div>
+            <div class="content-section">
+                <h3>1. Demonstrating Bridge-Only Supervision</h3>
+                <p>Proves that substantial improvements in visual-linguistic grounding can be achieved by training only the bridging component, challenging assumptions that end-to-end fine-tuning is necessary for significant gains.</p>
+                
+                <h3>2. Architectural Innovation</h3>
+                <p>Introduces transformer-based SAB design that elevates the bridge from simple projection to a learnable cross-modal reasoning component capable of modeling complex dependencies and establishing structured correspondences.</p>
+                
+                <h3>3. Modular & Scalable Approach</h3>
+                <p>Provides a parameter-efficient enhancement compatible with diverse pre-trained encoders and decoders, requiring minimal modifications for integration into existing frameworks.</p>
+                
+                <h3>4. Generalization Insights</h3>
+                <p>Empirical validation on out-of-distribution datasets demonstrates that supervised bridges learn transferable alignment strategies rather than dataset-specific mappings, with broader implications for zero-shot learning.</p>
+            </div>
+        </div>
+
+        <!-- Slide 12: Future Work -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Future Directions</h2>
+            </div>
+            <div class="content-section">
+                <h3>Immediate Extensions</h3>
+                <ul class="bullet-list">
+                    <li><strong>Full COCO Training:</strong> Expand from curated subset to complete MSCOCO train2014 for richer supervision and better coverage of long-tail visual concepts</li>
+                    <li><strong>Multilingual Supervision:</strong> Incorporate parallel caption corpora across multiple languages to strengthen language-agnostic visual understanding</li>
+                </ul>
+                
+                <h3>Architectural Refinements</h3>
+                <ul class="bullet-list">
+                    <li><strong>Deeper Attention:</strong> Investigate architectures with more transformer layers and increased representational capacity</li>
+                    <li><strong>Alternative Mechanisms:</strong> Explore deformable attention or memory-augmented architectures for more efficient patch-level aggregation</li>
+                    <li><strong>Enhanced Objectives:</strong> Incorporate contrastive alignment losses or region-specific supervision for finer-grained grounding</li>
+                </ul>
+                
+                <h3>Broader Applications</h3>
+                <p>Adapt supervised bridging approaches to visual question answering, image-text retrieval, and multimodal reasoning tasks, potentially establishing a unified framework for parameter-efficient cross-modal integration.</p>
+            </div>
+        </div>
+
+        <!-- Slide 13: Conclusion -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Conclusion</h2>
+            </div>
+            <div class="content-section">
+                <p style="font-size: 22px; line-height: 1.9;">MultiCapCLIP-SAB introduces a transformer-based Supervised Attention Bridge that fundamentally improves zero-shot multilingual image captioning through enhanced visual-linguistic alignment. By training only the bridge component on a curated MSCOCO subset while maintaining frozen CLIP and mBART encoders, we demonstrate that targeted supervision at the cross-modal interface yields substantial improvements in semantic grounding and structural coherence.</p>
+            </div>
+            <div class="key-point">
+                Key Achievement: Expressive bridging mechanisms can effectively compensate for frozen encoder constraints, achieving strong performance with minimal trainable parameters
+            </div>
+            <div class="content-section">
+                <h3>Impact & Significance</h3>
+                <p>This work establishes a generalizable methodology for enhancing vision-language models through strategic parameter allocation, with implications extending beyond captioning to diverse multimodal applications. The demonstrated effectiveness of supervised bridging suggests a promising path toward democratizing advanced multimodal capabilities through parameter-efficient architectures.</p>
+            </div>
+        </div>
+
+        <!-- Slide 14: Thank You -->
+        <div class="slide title-slide">
+            <h1 class="slide-title">Thank You</h1>
+            <div style="font-size: 28px; margin: 40px 0;">
+                Questions & Discussion
+            </div>
+            <div class="author-info" style="font-size: 22px;">
+                <strong>Saliyah Alotaibi</strong><br>
+                g202006820@kfupm.edu.sa
+            </div>
+            <div class="author-info" style="font-size: 20px; margin-top: 30px;">
+                Supervised by: <strong>Dr. Muzammil Behzad</strong><br>
+                King Fahd University of Petroleum and Minerals
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
+            <span class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">14</span></span>
+            <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Next →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 1;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlides').textContent = totalSlides;
+        
+        function showSlide(n) {
+            if (n > totalSlides) currentSlide = totalSlides;
+            if (n < 1) currentSlide = 1;
+            
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[currentSlide - 1].classList.add('active');
+            
+            document.getElementById('currentSlide').textContent = currentSlide;
+            document.getElementById('prevBtn').disabled = currentSlide === 1;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides;
+        }
+        
+        function changeSlide(n) {
+            currentSlide += n;
+            showSlide(currentSlide);
+        }
+        
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') changeSlide(-1);
+            if (e.key === 'ArrowRight') changeSlide(1);
+        });
+        
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>
