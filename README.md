@@ -47,8 +47,8 @@ Both models will be evaluated on the Flickr30k dataset in a strict zero-shot set
 # THE FOLLOWING IS SUPPOSED TO BE DONE LATER
 
 ### Project Documents
-- **Presentation:** [Project Presentation](/presentation.pptx)
-- **Report:** [Project Report](/report.pdf)
+- **Presentation:** [Project Presentation](/[presentation.pptx](https://github.com/BRAIN-Lab-AI/MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning/blob/main/MultiCapCLIP-SAB-Enhanced-Visual-Language-Grounding.pptx))
+- **Report:** [Project Report](https://github.com/BRAIN-Lab-AI/MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning/blob/main/MultiCapCLIP_SAB__A_Supervised_Attention_Bridge_for_Enhanced_Visual_Language_Grounding__Copy_123456.pdf)
 
 ### Reference Paper
 - [(ACL'2023) MultiCapCLIP: Auto-Encoding Prompts for Zero-Shot Multilingual Visual Captioning](https://aclanthology.org/2023.acl-long.664/)
@@ -85,7 +85,7 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 -**Decoder:**  A frozen, pre-trained multilingual decoder (e.g., mBART) that generates captions from a sequence of embeddings.
 -**Supervised Attention Bridge (SAB):** A multi-layer Transformer network that is trained to map the visual features from the Vision Encoder to the input space of the Decoder. This is the core architectural enhancement.
 -**Zero-Shot Evaluation:** The process of evaluating a model on a dataset (e.g., Flickr30k) that it has never seen during its training phase (which was done on COCO).
--**Metrics:** Recall@K (for retrieval evaluation) and BLEU, METEOR, ROUGE-L, CIDEr (for captioning evaluation).
+-**Metrics:** BLEU(1,2,3,4), METEOR, ROUGE-L, CIDEr (for captioning evaluation).
 
 
 ### Research Gaps
@@ -107,16 +107,25 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 
 
 ### Loopholes or Research Areas
-- **Evaluation Metrics:** Lack of robust metrics to effectively assess the quality of generated images.
-- **Output Consistency:** Inconsistencies in output quality when scaling the model to higher resolutions.
-- **Computational Resources:** Training requires significant GPU compute resources, which may not be readily accessible.
+Despite the progress achieved by vision–language models such as CLIP and MultiCapCLIP, several research gaps remain unresolved:
+
+- **Evaluation Metrics:** Existing metrics (BLEU, CIDEr, ROUGE-L, METEOR) do not fully capture semantic grounding or visual relevance, limiting the ability to robustly judge caption quality.
+- **Output Consistency:** Zero-shot captioning models often produce unstable or generic captions when evaluated on higher-resolution images or unseen datasets.
+- **Computational Resources:** Full fine-tuning of large-scale models remains expensive and inaccessible for many research settings.
+
+These limitations highlight the need for a lightweight, computationally efficient architecture that can improve grounding without retraining the entire model.
+
 
 ### Problem vs. Ideation: Proposed 3 Ideas to Solve the Problems
-1. **Hybrid Training Strategies:** Investigating the optimal balance between unsupervised pre-training and lightweight supervised fine-tuning of specific components like the bridge.
+### 1. **Hybrid Training Strategies**
+Finding the optimal balance between frozen large-scale models and selectively trainable components. Our project focuses on updating only the attention bridge while keeping both the vision encoder (CLIP ViT-B/16) and text decoder (mBART) frozen.
 
-2.**Bridge Architecture Exploration:** The design of the attention bridge (number of layers, attention heads, query tokens) is a key area for research to find the most effective and efficient configuration.
+### 2. **Bridge Architecture Exploration**
+The configuration of the supervised attention bridge — including the number of layers, attention heads, hidden dimensions, and number of query tokens — directly impacts the model’s grounding capability. This architecture becomes a focused research area in our work.
 
-3.**Cross-Dataset Generalization:** Developing more robust evaluation protocols to measure a model's true ability to generalize to diverse, unseen visual domains and styles.
+### 3. **Cross-Dataset Generalization**
+To evaluate true generalization, we adopt strict zero-shot evaluation settings. The model is trained exclusively on COCO and tested on unfamilar datasets like Flickr30k without any domain adaptation.
+
 
 
 
@@ -130,14 +139,28 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval201
 
 
 ### Proposed Solution: Code-Based Implementation
-This repository provides an implementation of MultiCapCLIP-SAB, a model that enhances the MultiCapCLIP framework with a supervised attention bridge. The solution includes:
+This repository contains a fully reproducible implementation of **MultiCapCLIP-SAB**, built on top of the official MultiCapCLIP architecture.
 
--**Frozen Pre-trained Models:** Utilizes frozen CLIP ViT-B/16 for vision encoding and a frozen mBART for multilingual caption decoding.
+### ✔ Frozen Pretrained Models
+- **CLIP ViT-B/16** for extracting high-quality visual features  
+- **mBART** for multilingual caption generation  
 
--**Supervised Attention Bridge:** A trainable, multi-layer Transformer network that connects the vision and language models.
+Both remain frozen during training to reduce computation and preserve pretrained knowledge.
 
--**Targeted Training Loop:** A PyTorch-based training script that exclusively trains the attention bridge on paired image-caption data from the COCO dataset.
+### ✔ Supervised Attention Bridge (SAB)
+A trainable Transformer-based module that:
+- Ingests CLIP embeddings  
+- Injects learnable query tokens  
+- Produces refined representations aligned with the language decoder  
 
+### ✔ Targeted Training Pipeline
+A PyTorch-based training script that:
+- Loads image–caption pairs from COCO  
+- Feeds CLIP embeddings into the SAB  
+- Trains the SAB with cross-entropy loss  
+- Keeps all other components frozen  
+
+This ensures high efficiency and stable optimization.
 
 
 ### Key Components
@@ -181,29 +204,62 @@ The workflow of the MultiCapCLIP-SAB model is as follows:
 
 1. **Clone the Repository:**
     ```bash
-    git clone https://github.com/yourusername/enhanced-stable-diffusion.git
-    cd enhanced-stable-diffusion
+    git clone https://github.com/yourusername/MultiCapCLIP-SAB.git
+    cd MultiCapCLIP-SAB
     ```
 !python /content/drive/MyDrive/MultiCapCLIP/train_supervised_attention_bridge.py
-2. **Set Up the Environment:**
-    Create a virtual environment and install the required dependencies.
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows use: venv\Scripts\activate
-    pip install -r requirements.txt
-    ```
+## 2. Set Up the Environment
+Create a virtual environment and install the required dependencies:
+
+# Upgrade core Python tools
+pip install -U pip setuptools wheel
+
+
+## Install Core Dependencies
+
+# PyTorch (CUDA 11.7 build)
+pip install torch==1.13.1+cu117 \
+            torchvision==0.14.1+cu117 \
+            torchaudio==0.13.1+cu117 \
+            -f https://download.pytorch.org/whl/cu117/torch_stable.html
+
+# Transformers + Tokenizers (stable versions used in the project)
+pip install "transformers==4.36.2" "tokenizers==0.15.2" --only-binary=:all:
+
+## Vision–Language Libraries
+# OpenAI CLIP
+pip install git+https://github.com/openai/CLIP.git
+# YAML config parsing
+pip install "ruamel.yaml<0.18.0"
+## Utility & NLP Dependencies
+pip install ftfy regex tqdm sentencepiece
+pip install opencv-python
+pip install timm
+pip install datasets accelerate
+pip install nltk rouge-score
+pip install decord
+pip install wget
+pip install stanfordcorenlp
+##  COCO Evaluation & Visualization
+pip install git+https://github.com/salaniz/pycocoevalcap@master
+pip install matplotlib pillow
+pip install -r requirements-2.txt
 
 3. **Train the Model:**
     Configure the training parameters in the provided configuration file and run:
     ```bash
-    python train.py --config configs/train_config.yaml
+    python train_supervised_attention_bridge.py \
+    --config configs/train_bridge.yaml \
+    --output_dir output/supervised_attention_bridge/
+
     ```
 
 4. **Generate Images:**
-    Once training is complete, use the inference script to generate images.
+    Once training is complete, use the inference script to generate captions.
     ```bash
-    python inference.py --checkpoint path/to/checkpoint.pt --input "A surreal landscape with mountains and rivers"
-    ```
+python flickr30k_all_in_one_eval.py \
+    --checkpoint checkpoints/best.pt \
+    --image_path path/to/image.jpg    ```
 
 ## Acknowledgments
 - **Open-Source Communities:** I acknowledge the open-source contributors behind PyTorch, Hugging Face Transformers, OpenAI CLIP, and the Python ecosystem (NumPy, PIL, torchvision), whose tools formed the foundation of this project.
