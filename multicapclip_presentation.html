@@ -252,6 +252,26 @@
         .small-text {
             font-size: 18px;
         }
+
+        /* NEW: image styling */
+        .image-box {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .image-caption {
+            font-size: 16px;
+            color: #4a5568;
+            margin-top: 8px;
+        }
+
     </style>
 </head>
 <body>
@@ -393,7 +413,34 @@
             </div>
         </div>
 
-        <!-- Slide 8: Training Methodology -->
+        <!-- NEW Slide 8: SAB Details -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Supervised Attention Bridge: Layer Design</h2>
+            </div>
+            <div class="two-column">
+                <div class="content-section">
+                    <h3>Bridge Layers & Components</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Input Projection Layer:</strong> CLIP patch embeddings are first normalized and linearly projected into a bridge-specific hidden space, preparing them for transformer processing.</li>
+                        <li><strong>Stack of Transformer Blocks:</strong> Each SAB layer consists of multi-head self-attention, a position-wise feed-forward network (MLP with non-linearity), residual connections, and layer normalization.</li>
+                        <li><strong>Query Token Module:</strong> A small set of learnable query tokens attends over all patch tokens, aggregating fine-grained visual evidence into compact semantic vectors.</li>
+                        <li><strong>Output Mapping:</strong> The final bridge outputs are projected into the decoder embedding space so that mBART can treat them as prefix tokens for caption generation.</li>
+                    </ul>
+                </div>
+                <div class="content-section">
+                    <h3>Training Flow</h3>
+                    <div class="image-box">
+                        <img src="sab_flow.png" alt="SAB training and inference flow diagram">
+                        <div class="image-caption">
+                            Training loop: input image → CLIP encoder → SAB → mBART decoder → loss calculation → backpropagation through the bridge only; inference reuses the trained bridge without fine-tuning CLIP or mBART.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Training Methodology -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Training Methodology</h2>
@@ -422,11 +469,10 @@
             </div>
         </div>
 
-        <!-- Slide 9: Experimental Results -->
+        <!-- Slide 10: Experimental Results -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Experimental Results</h2>
-                <p class="slide-subtitle">Zero-Shot Transfer to Flickr30k</p>
             </div>
             <div class="table-container">
                 <table>
@@ -473,11 +519,43 @@
                 </table>
             </div>
             <div class="highlight-box">
-                <p><strong>Interpretation:</strong> BLEU scores decline due to limited training data (subset only) and insufficient epochs. However, METEOR shows significant improvement (+46%), reflecting stronger semantic grounding. ROUGE-L demonstrates competitive structural alignment. With full COCO training, we expect substantial improvements across all metrics.</p>
+                <p><strong>Interpretation:</strong> BLEU scores decline due to limited training data (subset only) and insufficient epochs. However, METEOR shows significant improvement, reflecting stronger semantic grounding. ROUGE-L demonstrates competitive structural alignment. With full COCO training, we expect substantial improvements across all metrics.</p>
             </div>
         </div>
 
-        <!-- Slide 10: Ablation Study -->
+        <!-- NEW Slide 11: Results & Ablation Visual Summary -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Results & Ablation Study: Visual Summary</h2>
+            </div>
+            <div class="two-column">
+                <div class="content-section">
+                    <div class="image-box">
+                        <img src="metrics.png" alt="Flickr30k captioning metrics: Baseline vs SAB">
+                        <div class="image-caption">
+                            Captioning metrics on Flickr30k: SAB preserves competitive BLEU-1 while trading some n-gram precision for stronger semantic alignment as reflected in METEOR.
+                        </div>
+                    </div>
+                    <div class="image-box">
+                        <img src="train_loss.png" alt="Train vs Validation loss per epoch">
+                        <div class="image-caption">
+                            Training vs validation loss across epochs: the bridge continues to learn, while the validation curve flattens and slightly increases, indicating the need for more data or stronger regularization.
+                        </div>
+                    </div>
+                </div>
+                <div class="content-section">
+                    <h3>Ablation Insights</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Query Tokens:</strong> Removing learnable queries leads to generic, under-grounded captions, confirming their role in aggregating detailed patch information.</li>
+                        <li><strong>SAB vs Linear Bridge:</strong> The transformer-based bridge captures richer cross-modal relationships than a single linear layer, even when BLEU scores are constrained by limited supervision.</li>
+                        <li><strong>Training Dynamics:</strong> Longer training stabilizes the bridge, but the loss curves suggest that scaling the dataset is more beneficial than simply adding epochs.</li>
+                        <li><strong>Practical Takeaway:</strong> SAB provides a more semantically faithful mapping from CLIP patches to mBART tokens, and the visual metrics help diagnose where future improvements should target.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Ablation Study -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Ablation Study</h2>
@@ -495,7 +573,7 @@
             </div>
         </div>
 
-        <!-- Slide 11: Contributions -->
+        <!-- Slide 13: Contributions -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Research Contributions</h2>
@@ -515,7 +593,7 @@
             </div>
         </div>
 
-        <!-- Slide 12: Future Work -->
+        <!-- Slide 14: Future Work -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Future Directions</h2>
@@ -539,7 +617,7 @@
             </div>
         </div>
 
-        <!-- Slide 13: Conclusion -->
+        <!-- Slide 15: Conclusion -->
         <div class="slide">
             <div class="slide-header">
                 <h2 class="slide-title">Conclusion</h2>
@@ -556,7 +634,7 @@
             </div>
         </div>
 
-        <!-- Slide 14: Thank You -->
+        <!-- Slide 16: Thank You -->
         <div class="slide title-slide">
             <h1 class="slide-title">Thank You</h1>
             <div style="font-size: 28px; margin: 40px 0;">
@@ -575,7 +653,7 @@
         <!-- Navigation -->
         <div class="navigation">
             <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Previous</button>
-            <span class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">14</span></span>
+            <span class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">16</span></span>
             <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Next →</button>
         </div>
     </div>
