@@ -58,7 +58,7 @@ Both models will be evaluated on the Flickr30k dataset in a strict zero-shot set
 - [MS COCO Dataset](https://cocodataset.org/#home)
 
 ### Dataset Setup
-To reproduce our experiments, you need the **MS COCO 2014** dataset (val split + annotations).  
+To reproduce our experiments, you need the **MS COCO 2014** dataset.  
 We provide a simple script to download and extract everything automatically.
 
  ```bash
@@ -75,6 +75,25 @@ unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/val2014.zip \
 
 unzip -o /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/annotations_trainval2014.zip \
     -d /content/drive/MyDrive/MultiCapCLIP/data/MSCOCO/
+ ```
+
+In addition to MS COCO, our zero-shot evaluation uses the Flickr30k dataset (test).
+Below are the official sources for both the images and caption annotations.
+
+ ```bash
+mkdir -p /content/drive/MyDrive/MultiCapCLIP/data/Flickr30k/
+
+# Images (Kaggle mirror)
+wget -c https://github.com/BryanPlummer/flickr30k_entities/releases/download/v1.0/flickr30k-images.tar.gz \
+    -P /content/drive/MyDrive/MultiCapCLIP/data/Flickr30k/
+
+tar -xzf /content/drive/MyDrive/MultiCapCLIP/data/Flickr30k/flickr30k-images.tar.gz \
+    -C /content/drive/MyDrive/MultiCapCLIP/data/Flickr30k/
+
+# Captions
+wget -c https://raw.githubusercontent.com/BryanPlummer/flickr30k_entities/master/annotations/captions.txt \
+    -P /content/drive/MyDrive/MultiCapCLIP/data/Flickr30k/
+
  ```
 
 ## Project Technicalities
