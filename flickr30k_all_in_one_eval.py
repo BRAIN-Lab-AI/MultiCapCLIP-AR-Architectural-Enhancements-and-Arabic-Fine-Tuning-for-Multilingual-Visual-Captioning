@@ -17,23 +17,12 @@ from nltk.translate.bleu_score import corpus_bleu, SmoothingFunction
 from nltk.translate.meteor_score import meteor_score
 
 
-# ============================================================
-# 1) Utils: Tokenization & ROUGE-L & METEOR
-# ============================================================
-
 def simple_tokenize(text):
-    """
-    Very simple tokenizer: lowercase + split on whitespace.
-    No NLTK punkt, so no external resources needed.
-    """
     return text.lower().strip().split()
 
 
 def lcs_length(a, b):
-    """
-    Longest Common Subsequence length for ROUGE-L.
-    a, b: lists of tokens
-    """
+
     n, m = len(a), len(b)
     dp = [[0] * (m + 1) for _ in range(n + 1)]
     for i in range(n):
@@ -46,11 +35,6 @@ def lcs_length(a, b):
 
 
 def compute_rouge_l(references, hypotheses):
-    """
-    references: list of list of tokenized refs (each: list[list[str]])
-    hypotheses: list of tokenized hyps (each: list[str])
-    Returns average ROUGE-L F1.
-    """
     assert len(references) == len(hypotheses)
     scores = []
 
@@ -59,7 +43,6 @@ def compute_rouge_l(references, hypotheses):
             scores.append(0.0)
             continue
 
-        # Use best matching reference per sample
         best_f1 = 0.0
         for ref in refs:
             if len(ref) == 0:
@@ -79,36 +62,21 @@ def compute_rouge_l(references, hypotheses):
 
 
 def compute_meteor(references, hypotheses):
-    """
-    references: list of list of tokenized refs (each: list[list[str]])
-    hypotheses: list of tokenized hyps (each: list[str])
 
-    We call nltk.translate.meteor_score.meteor_score with *tokenized* inputs,
-    so it لن يحتاج word_tokenize ولا punkt_tab.
-    """
     assert len(references) == len(hypotheses)
     scores = []
     for refs, hyp in zip(references, hypotheses):
         if len(hyp) == 0:
             scores.append(0.0)
             continue
-
-        # meteor_score expects:
-        # - references: list of token lists
-        # - hypothesis: one token list
         try:
             score = meteor_score(refs, hyp)
         except Exception:
-            # لو صار أي مشكلة من NLTK، لا نكسر السكربت
             score = 0.0
         scores.append(score)
 
     return sum(scores) / max(len(scores), 1)
 
-
-# ============================================================
-# 2) Load Flickr JSON — auto-detect any format
-# ============================================================
 
 def load_flickr_json(path):
     print(f">>> Loading Flickr30k JSON: {path}")
@@ -117,7 +85,7 @@ def load_flickr_json(path):
 
     samples = []
 
-    # Format A: {"test_samples": [ { "image_id": ..., "filename": ..., "captions": [...] }, ... ]}
+
     if isinstance(data, dict) and "test_samples" in data:
         print("[INFO] Detected format: dict['test_samples']")
         for item in data["test_samples"]:
@@ -127,7 +95,7 @@ def load_flickr_json(path):
                 "captions": item.get("captions", []),
             })
 
-    # Format B: list of objects [{...}, {...}]
+
     elif isinstance(data, list):
         print("[INFO] Detected format: list of objects")
         for item in data:
@@ -137,13 +105,11 @@ def load_flickr_json(path):
                 "captions": item.get("captions", []),
             })
 
-    # Format C: dict[id] -> [captions]
+
     elif isinstance(data, dict):
         print("[INFO] Detected format: dict[id] -> [captions]")
         for image_id, caps in data.items():
-            # حاول نستنتج اسم الملف من الـ key
             filename = image_id
-            # لو الـ key ما فيه امتداد صورة، نفترض .jpg
             if not filename.lower().endswith((".jpg", ".jpeg", ".png")):
                 filename = f"{image_id}.jpg"
             samples.append({
@@ -157,10 +123,6 @@ def load_flickr_json(path):
     print(f"[INFO] Loaded {len(samples)} Flickr30k samples")
     return samples
 
-
-# ============================================================
-# 3) Load model from checkpoint
-# ============================================================
 
 def load_model_and_preprocess(checkpoint_path, config_path=None, device="cuda", mode="adapt"):
     if config_path is None:
@@ -195,19 +157,10 @@ def load_model_and_preprocess(checkpoint_path, config_path=None, device="cuda", 
     return model, cfg, transform
 
 
-# ============================================================
-# 4) Caption generation for one image
-# ============================================================
-
 @torch.no_grad()
 def generate_caption_for_image(model, image_tensor, max_length=40, num_beams=3):
-    """
-    model: MultiCapCLIP (AdaCLIP) instance
-    image_tensor: (3, H, W) normalized
-    """
     image_tensor = image_tensor.unsqueeze(0).to(next(model.parameters()).device)
 
-    # تعتمد على دالة generate الداخلية في AdaCLIP (كما في الكود الأصلي)
     result = model.generate(
         image=image_tensor,
         max_length=max_length,
@@ -219,10 +172,6 @@ def generate_caption_for_image(model, image_tensor, max_length=40, num_beams=3):
         return result[0]
     return result
 
-
-# ============================================================
-# 5) Main
-# ============================================================
 
 def main():
     parser = argparse.ArgumentParser()
@@ -238,10 +187,10 @@ def main():
     device = args.device if torch.cuda.is_available() and args.device == "cuda" else "cpu"
     print(f">>> Device: {device}")
 
-    # 1) Load Flickr30k entries
+
     flickr_samples = load_flickr_json(args.flickr_json)
 
-    # 2) Load model
+
     print(">>> Loading model...")
     model, cfg, transform = load_model_and_preprocess(
         checkpoint_path=args.checkpoint,
@@ -250,7 +199,6 @@ def main():
         mode=args.mode,
     )
 
-    # 3) Loop over images and generate captions
     predictions = []
     hyps_tokens = []
     refs_tokens = []
@@ -289,13 +237,11 @@ def main():
         ref_toks = [simple_tokenize(r) for r in refs if isinstance(r, str) and len(r.strip()) > 0]
 
         if len(ref_toks) == 0:
-            # لو مافي جمل مرجعية، نحط ref وحدة فاضية عشان الـ BLEU ما ينهار
             ref_toks = [[]]
 
         hyps_tokens.append(hyp_tok)
         refs_tokens.append(ref_toks)
 
-    # 4) Save predictions JSON
     with open(args.output_json, "w", encoding="utf-8") as f:
         json.dump(predictions, f, ensure_ascii=False, indent=2)
     print(f"[INFO] Saved {len(predictions)} predictions to: {args.output_json}")
@@ -304,13 +250,9 @@ def main():
         print("[WARN] No predictions to evaluate. Check image paths / JSON format.")
         return
 
-    # 5) Compute BLEU, METEOR, ROUGE-L
     print("\n===== Evaluation Metrics on Flickr30k =====")
     smoothie = SmoothingFunction().method1
 
-    # corpus_bleu expects:
-    # list_of_references: list of list of ref-sentences (each ref-sentence: list[str])
-    # hypotheses: list of hyp-sentences (each: list[str])
 
     bleu1 = corpus_bleu(refs_tokens, hyps_tokens, weights=(1.0, 0.0, 0.0, 0.0), smoothing_function=smoothie)
     bleu2 = corpus_bleu(refs_tokens, hyps_tokens, weights=(0.5, 0.5, 0.0, 0.0), smoothing_function=smoothie)
