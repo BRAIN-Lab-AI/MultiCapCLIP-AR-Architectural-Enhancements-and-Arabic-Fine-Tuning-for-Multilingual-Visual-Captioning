@@ -212,6 +212,7 @@ How to Run the Code
 Create a virtual environment and install the required dependencies:
 
  Upgrade core Python tools
+ ```bash
 pip install -U pip setuptools wheel
 
 
@@ -238,7 +239,7 @@ pip install stanfordcorenlp
 pip install git+https://github.com/salaniz/pycocoevalcap@master
 pip install matplotlib pillow
 pip install -r requirements-2.txt
-
+   ```
 3. **Train the Model:**
     Configure the training parameters in the provided configuration file and run:
     ```bash
@@ -251,9 +252,12 @@ pip install -r requirements-2.txt
 4. **Generate Images:**
     Once training is complete, use the inference script to generate captions.
     ```bash
-python flickr30k_all_in_one_eval.py \
+    python flickr30k_all_in_one_eval.py \
     --checkpoint checkpoints/best.pt \
-    --image_path path/to/image.jpg    ```
+    --image_path path/to/image.jp
+
+    ```
+
 
 ## Acknowledgments
 - **Open-Source Communities:** I acknowledge the open-source contributors behind PyTorch, Hugging Face Transformers, OpenAI CLIP, and the Python ecosystem (NumPy, PIL, torchvision), whose tools formed the foundation of this project.
