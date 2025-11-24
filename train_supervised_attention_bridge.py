@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
-# Use torch.cuda.amp for mixed precision (stable on Colab)
 from torch.cuda.amp import autocast, GradScaler
 import clip
 from transformers import MBartForConditionalGeneration, MBart50TokenizerFast
@@ -15,17 +14,13 @@ import numpy as np
 import csv
 from datetime import datetime
 
-# ============================================================================
 # Configuration
-# ============================================================================
 
 class Config:
-    # Paths
     data_root = Path("/content/drive/MyDrive/MultiCapCLIP/data/MSCOCO")
     train_images_dir = data_root / "train2014"
     val_images_dir = data_root / "val2014"
 
-    # train
     train_annotations = data_root / "annotations/captions_train2014_subset_clean.json"
     val_annotations = data_root / "annotations/captions_val2014.json"
 
@@ -47,30 +42,19 @@ class Config:
     weight_decay = 0.01
     warmup_steps = 3000
     gradient_clip_norm = 1.0
-    
-    # Logging
     log_interval = 100
     eval_interval = 1000
     save_interval = 2000
-    
-    # Device
     device = "cuda" if torch.cuda.is_available() else "cpu"
     use_amp = True
-    
-    # Data
     max_caption_length = 128
     num_workers = 2
-    
-    # Language
     target_lang = "en_XX"  # English
 
-# ============================================================================
 # Multi-Layer Attention Bridge Network
 # ============================================================================
 
-class TransformerEncoderLayer(nn.Module):
-    """Single Transformer encoder layer with multi-head attention."""
-    
+class TransformerEncoderLayer(nn.Module):    
     def __init__(self, d_model, nhead, dim_feedforward, dropout):
         super().__init__()
         self.self_attn = nn.MultiheadAttention(d_model, nhead, dropout=dropout, batch_first=True)
@@ -98,10 +82,7 @@ class TransformerEncoderLayer(nn.Module):
 
 
 class AttentionBridge(nn.Module):
-    """
-    Multi-layer attention bridge that processes CLIP patch features.
-    """
-    
+
     def __init__(self, config):
         super().__init__()
         self.config = config
@@ -120,7 +101,6 @@ class AttentionBridge(nn.Module):
             for _ in range(config.bridge_layers)
         ])
         
-        # Learnable query tokens for cross-attention pooling
         self.query_tokens = nn.Parameter(torch.randn(1, config.num_bridge_tokens, config.mbart_dim))
         self.cross_attn = nn.MultiheadAttention(
             config.mbart_dim, 
@@ -129,13 +109,11 @@ class AttentionBridge(nn.Module):
             batch_first=True
         )
         
-        # Output layer norm
         self.output_norm = nn.LayerNorm(config.mbart_dim)
         
         self._init_weights()
         
     def _init_weights(self):
-        """Initialize weights with smaller values to prevent gradient explosion."""
         nn.init.normal_(self.query_tokens, mean=0.0, std=0.02)
         nn.init.xavier_uniform_(self.input_proj.weight)
         if self.input_proj.bias is not None:
@@ -144,23 +122,20 @@ class AttentionBridge(nn.Module):
     def forward(self, clip_features):
         batch_size = clip_features.shape[0]
         
-        # Project to mBART dimension
+        # to mBART dimension
         x = self.input_proj(clip_features)
         
-        # Apply multi-layer Transformer
+        # multi-layer Transformer
         for layer in self.layers:
             x = layer(x)
         
         # Cross-attention pooling with learnable queries
         queries = self.query_tokens.expand(batch_size, -1, -1)
         output, _ = self.cross_attn(queries, x, x)
-        
-        # Output normalization
         output = self.output_norm(output)
         
         return output
 
-# ============================================================================
 # Dataset
 # ============================================================================
 
@@ -229,7 +204,6 @@ class COCOCaptionDataset(Dataset):
             'caption': caption
         }
 
-# ============================================================================
 # Training Functions
 # ============================================================================
 
@@ -243,7 +217,6 @@ def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_st
 
 
 def train_epoch(bridge, clip_model, mbart_model, tokenizer, train_loader, optimizer, scheduler, scaler, config, epoch, global_step, csv_writer, csv_file):
-    """Train for one epoch."""
     bridge.train()
     clip_model.eval()
     mbart_model.eval()
@@ -261,7 +234,6 @@ def train_epoch(bridge, clip_model, mbart_model, tokenizer, train_loader, optimi
         optimizer.zero_grad()
         
         with autocast(enabled=config.use_amp):
-            # Extract CLIP patch features (frozen)
             with torch.no_grad():
                 if hasattr(clip_model.visual, 'transformer'):
                     x = clip_model.visual.conv1(images.type(clip_model.dtype))
@@ -280,16 +252,13 @@ def train_epoch(bridge, clip_model, mbart_model, tokenizer, train_loader, optimi
                     clip_features = clip_model.encode_image(images)
                     clip_patch_features = clip_features.unsqueeze(1).repeat(1, 50, 1).float()
             
-            # Bridge network (trainable)
             bridge_output = bridge(clip_patch_features)
             
-            # Prepare decoder inputs
             decoder_input_ids = mbart_model.prepare_decoder_input_ids_from_labels(input_ids)
             
             from transformers.modeling_outputs import BaseModelOutput
             encoder_outputs = BaseModelOutput(last_hidden_state=bridge_output)
             
-            # mBART decoder forward
             outputs = mbart_model(
                 encoder_outputs=encoder_outputs,
                 decoder_input_ids=decoder_input_ids,
@@ -297,7 +266,6 @@ def train_epoch(bridge, clip_model, mbart_model, tokenizer, train_loader, optimi
                 return_dict=True
             )
             
-            # Calculate loss
             logits = outputs.logits
             loss = F.cross_entropy(
                 logits.view(-1, logits.size(-1)),
@@ -310,17 +278,9 @@ def train_epoch(bridge, clip_model, mbart_model, tokenizer, train_loader, optimi
             optimizer.zero_grad()
             continue
         
-        # --- ENHANCEMENT: STABLE GRADIENT UPDATE --- #
-        # 1. Scale loss and backpropagate
         scaler.scale(loss).backward()
-        
-        # 2. Unscale gradients before clipping
         scaler.unscale_(optimizer)
-        
-        # 3. Clip gradients to prevent explosion
         torch.nn.utils.clip_grad_norm_(bridge.parameters(), config.gradient_clip_norm)
-        
-        # 4. Step optimizer and update scaler
         scaler.step(optimizer)
         scaler.update()
         # ------------------------------------------- #
@@ -365,7 +325,6 @@ def train_epoch(bridge, clip_model, mbart_model, tokenizer, train_loader, optimi
 
 @torch.no_grad()
 def validate(bridge, clip_model, mbart_model, tokenizer, val_loader, config):
-    """Validate the model."""
     bridge.eval()
     clip_model.eval()
     mbart_model.eval()
@@ -421,7 +380,6 @@ def validate(bridge, clip_model, mbart_model, tokenizer, val_loader, config):
     return avg_loss, perplexity
 
 
-# ============================================================================
 # Main Training Loop
 # ============================================================================
 
