@@ -225,13 +225,8 @@ pip install torch==1.13.1+cu117 \
 
 Transformers + Tokenizers (stable versions used in the project)
 pip install "transformers==4.36.2" "tokenizers==0.15.2" --only-binary=:all:
-
-Vision–Language Libraries
-OpenAI CLIP
 pip install git+https://github.com/openai/CLIP.git
- YAML config parsing
 pip install "ruamel.yaml<0.18.0"
-Utility & NLP Dependencies
 pip install ftfy regex tqdm sentencepiece
 pip install opencv-python
 pip install timm
@@ -240,7 +235,6 @@ pip install nltk rouge-score
 pip install decord
 pip install wget
 pip install stanfordcorenlp
-  COCO Evaluation & Visualization
 pip install git+https://github.com/salaniz/pycocoevalcap@master
 pip install matplotlib pillow
 pip install -r requirements-2.txt
