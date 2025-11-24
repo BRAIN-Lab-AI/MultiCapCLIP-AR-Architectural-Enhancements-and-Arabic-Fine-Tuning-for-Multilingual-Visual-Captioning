@@ -431,7 +431,7 @@
                 <div class="content-section">
                     <h3>Training Flow</h3>
                     <div class="image-box">
-                        <img src="sab_flow.png" alt="SAB training and inference flow diagram">
+                        <img src="methodology.png" alt="MultiCapCLIP-SAB Flow Diagram">
                         <div class="image-caption">
                             Training loop: input image → CLIP encoder → SAB → mBART decoder → loss calculation → backpropagation through the bridge only; inference reuses the trained bridge without fine-tuning CLIP or mBART.
                         </div>
@@ -537,7 +537,7 @@
                         </div>
                     </div>
                     <div class="image-box">
-                        <img src="train_loss.png" alt="Train vs Validation loss per epoch">
+                        <img src="train_loss.png" alt="Train vs Validation loss per epoch for SAB">
                         <div class="image-caption">
                             Training vs validation loss across epochs: the bridge continues to learn, while the validation curve flattens and slightly increases, indicating the need for more data or stronger regularization.
                         </div>
