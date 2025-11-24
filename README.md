@@ -166,11 +166,11 @@ This ensures high efficiency and stable optimization.
 ### Key Components
 -**'train_supervised_attention_bridge.py':** The main script for training the attention bridge on the COCO dataset. It handles data loading, model setup, and the training loop.
 
--**'model.py / bridge.py':** Contains the implementation of the AttentionBridge network, including the Transformer layers and cross-attention pooling mechanism.
+-**'model.py':** Contains the implementation of the AttentionBridge network, including the Transformer layers and cross-attention pooling mechanism.
 
 -**'dataset.py':** Utility script for creating the COCO image-caption dataset, preparing images and tokenizing captions.
 
--**'evaluate.py':** Script for performing zero-shot evaluation on the Flickr30k dataset, calculating captioning and retrieval metrics.
+-**'flickr30k_all_in_one_eval.py':** Script for performing zero-shot evaluation on the Flickr30k dataset, calculating captioning and retrieval metrics.
 
 
 
@@ -208,7 +208,7 @@ How to Run the Code
     cd MultiCapCLIP-SAB
     ```
 !python /content/drive/MyDrive/MultiCapCLIP/train_supervised_attention_bridge.py
- 2. Set Up the Environment
+ 2. **Set Up the Environment**
 Create a virtual environment and install the required dependencies:
 
  Upgrade core Python tools
