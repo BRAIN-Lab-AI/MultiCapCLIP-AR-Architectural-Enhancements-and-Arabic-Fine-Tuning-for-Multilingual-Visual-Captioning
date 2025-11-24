@@ -253,8 +253,8 @@ pip install -r requirements-2.txt
     ```bash
 python flickr30k_all_in_one_eval.py \
     --checkpoint checkpoints/best.pt \
-    --image_path path/to/image.jpg    ```
-
+    --image_path path/to/image.jpg    
+```
 ## Acknowledgments
 - **Open-Source Communities:** I acknowledge the open-source contributors behind PyTorch, Hugging Face Transformers, OpenAI CLIP, and the Python ecosystem (NumPy, PIL, torchvision), whose tools formed the foundation of this project.
 
