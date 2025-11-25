@@ -16,6 +16,5 @@ batch_size: 32
 num_workers: 4
 max_tokens: 40
 
-## Other Settings
 optimizer: {opt: adamW, lr: 1e-4, weight_decay: 0.01, lr_mult: 1}
 schedular: {sched: fix, lr: 1e-4, num_warmup_steps: 0.1, epochs: 10}
