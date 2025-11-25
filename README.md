@@ -229,6 +229,8 @@ How to Run the Code
     cd MultiCapCLIP-SAB
     ```
 !python /content/drive/MyDrive/MultiCapCLIP/train_supervised_attention_bridge.py
+
+
  2. **Set Up the Environment**
 Create a virtual environment and install the required dependencies:
 
