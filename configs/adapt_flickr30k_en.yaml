@@ -1,6 +1,6 @@
-# configs/adapt_flickr30k_en.yaml
 
-data_path: data/corpus/flickr30k_en.txt  # ملف كابشنات Flickr30k بالإنجليزي (train فقط)
+
+data_path: data/corpus/flickr30k_en.txt 
 num_adapt_samples: -1
 
 clip_arch: ViT-B/16
