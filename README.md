@@ -1,4 +1,4 @@
-# MultiCapCLIP-SAB: A Supervised Attention Bridge for Enhanced Zero-Shot Visual Captioning
+# MultiCapCLIP-SAB: A Supervised Attention Bridge for Enhanced Zero-Shot Captioning
 
 ## Project Metadata
 ### Authors
