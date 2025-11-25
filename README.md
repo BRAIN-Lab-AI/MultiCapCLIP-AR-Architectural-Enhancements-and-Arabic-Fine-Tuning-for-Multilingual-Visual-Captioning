@@ -55,8 +55,8 @@ Both models will be evaluated on the Flickr30k dataset in a strict zero-shot set
 - [https://github.com/yangbang18/MultiCapCLIP/tree/master]
 
 ### Reference Dataset
-- [MS COCO Dataset](https://cocodataset.org/#home)
-- [flickr30k Dataset](http://shannon.cs.illinois.edu/DenotationGraph/data/index.html)
+- Training Data [MS COCO Dataset](https://cocodataset.org/#home)
+- Testing Data  [flickr30k Dataset](http://shannon.cs.illinois.edu/DenotationGraph/data/index.html)
 
 ### Dataset Setup
 To reproduce our experiments, you need the **MS COCO 2014** dataset.  
