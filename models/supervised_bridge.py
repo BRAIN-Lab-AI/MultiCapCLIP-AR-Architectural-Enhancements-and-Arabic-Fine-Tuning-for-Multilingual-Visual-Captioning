@@ -2,8 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# ============================================================
-#    Transformer Encoder Layer (مطابق لملف التدريب)
+#    Transformer Encoder Layer
 # ============================================================
 
 class TransformerEncoderLayer(nn.Module):
@@ -34,20 +33,14 @@ class TransformerEncoderLayer(nn.Module):
         return src
 
 
-# ============================================================
 #              Supervised Attention Bridge
 # ============================================================
 
 class SupervisedBridge(nn.Module):
-    """
-    Multi-layer attention bridge used in training.
-    Produces (num_bridge_tokens x mbart_dim) to inject into decoder.
-    """
 
     def __init__(self, cfg):
         super().__init__()
 
-        # نفس الباراميترات المستخدمة في التدريب
         self.clip_dim = cfg["clip_dim"]
         self.mbart_dim = cfg["mbart_dim"]
         self.num_tokens = cfg["num_bridge_tokens"]
@@ -56,10 +49,10 @@ class SupervisedBridge(nn.Module):
         self.ff_dim = cfg["bridge_ff_dim"]
         self.dropout = cfg["dropout"]
 
-        # 1) Linear projection to mBART space
+# 1) Linear projection to mBART space
         self.input_proj = nn.Linear(self.clip_dim, self.mbart_dim)
 
-        # 2) Transformer Encoder layers
+# 2) Transformer Encoder layers
         self.layers = nn.ModuleList([
             TransformerEncoderLayer(
                 d_model=self.mbart_dim,
@@ -70,7 +63,7 @@ class SupervisedBridge(nn.Module):
             for _ in range(self.n_layers)
         ])
 
-        # 3) Learnable query tokens for cross-attention pooling
+# 3) Learnable query tokens for cross-attention pooling
         self.query_tokens = nn.Parameter(
             torch.randn(1, self.num_tokens, self.mbart_dim)
         )
@@ -93,10 +86,7 @@ class SupervisedBridge(nn.Module):
             nn.init.zeros_(self.input_proj.bias)
 
     def forward(self, clip_patch_feats):
-        """
-        clip_patch_feats: [B, N_patches, clip_dim]
-        returns: bridge_tokens [B, num_tokens, mbart_dim]
-        """
+
 
         x = self.input_proj(clip_patch_feats)    # [B, N, mbart_dim]
 
