@@ -13,7 +13,7 @@ from transformers import BertModel, BertPreTrainedModel, BertLayer
 from transformers.models.bert.modeling_bert import BertOnlyMLMHead
 
 
-# ============================
+
 #     CUSTOM BERT ENCODER
 # ============================
 
@@ -114,18 +114,16 @@ class BertEncoder(nn.Module):
         )
 
 
-# استبدال الـ Encoder الافتراضي في BERT بنسختنا
 transformers.models.bert.modeling_bert.BertEncoder = BertEncoder
 
 
-# ============================
+
 #           DECODER
 # ============================
 
 class Decoder(BertModel):
     def __init__(self, config):
         super().__init__(config, add_pooling_layer=False)
-        # سيتم تحديد طول البرومبت أثناء الـ forward
         self.prompt_length = 0
 
     def forward(
@@ -170,7 +168,6 @@ class Decoder(BertModel):
         batch_size, seq_length = input_shape
         device = input_ids.device if input_ids is not None else inputs_embeds.device
 
-        # ✅ تأكد أن token_type_ids طولها يطابق طول input_ids دائماً
         if token_type_ids is not None and token_type_ids.size(1) != seq_length:
             token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=device)
 
@@ -188,15 +185,12 @@ class Decoder(BertModel):
             # extended mask shape = (B, 1, seq_len, seq_len + prompt_len)
             new_input_shape = input_shape
 
-        # لو نستخدم inputs_embeds، نتجنب تضارب الأحجام مع token_type_embeddings
         if inputs_embeds is not None and input_ids is None:
-            # بهذه الحالة سنبني الـ embeddings يدويًا بدون token_type_embeddings
             use_inputs_embeds_only = True
         else:
             use_inputs_embeds_only = False
 
         if not use_inputs_embeds_only:
-            # token_type_ids العادية (في حالة وجود input_ids)
             if token_type_ids is None:
                 if hasattr(self.embeddings, "token_type_ids"):
                     buffered_token_type_ids = self.embeddings.token_type_ids[:, :seq_length]
@@ -205,12 +199,10 @@ class Decoder(BertModel):
                 else:
                     token_type_ids = torch.zeros(input_shape, dtype=torch.long, device=device)
 
-        # extended self-attention mask
         extended_attention_mask: torch.Tensor = self.get_extended_attention_mask(
             attention_mask, new_input_shape, device
         )
 
-        # cross-attention mask
         if self.config.is_decoder and encoder_hidden_states is not None:
             encoder_batch_size, encoder_sequence_length, _ = encoder_hidden_states.size()
             encoder_hidden_shape = (encoder_batch_size, encoder_sequence_length)
@@ -220,20 +212,15 @@ class Decoder(BertModel):
         else:
             encoder_extended_attention_mask = None
 
-        # head mask
         head_mask = self.get_head_mask(head_mask, self.config.num_hidden_layers)
 
-        # طول البرومبت
         if prompt_feats is not None:
             self.prompt_length = prompt_feats.size(1)
 
-        # تعديل past_key_values_length
         if past_key_values_length != 0:
             assert past_key_values_length > self.prompt_length
             past_key_values_length -= self.prompt_length
 
-        # ⚠️ الهَك الرئيسي:
-        # لو عندنا inputs_embeds بدون input_ids → لا نستدعي self.embeddings أبداً
         if use_inputs_embeds_only:
             embedding_output = inputs_embeds
         else:
@@ -245,14 +232,12 @@ class Decoder(BertModel):
                 past_key_values_length=past_key_values_length,
             )
 
-        # إضافة prompt_feats في بداية السكونس
         if prompt_feats is not None:
             if prompt_feats.size(0) != embedding_output.size(0):
                 bsz = embedding_output.size(0) // prompt_feats.size(0)
                 prompt_feats = prompt_feats.repeat(bsz, 1, 1)
             embedding_output = torch.cat((prompt_feats, embedding_output), dim=1)
 
-        # تشغيل الـ encoder
         encoder_outputs = self.encoder(
             embedding_output,
             attention_mask=extended_attention_mask,
@@ -282,7 +267,6 @@ class Decoder(BertModel):
         )
 
 
-# ============================
 #      LANGUAGE MODEL
 # ============================
 
@@ -338,20 +322,15 @@ class LanguageModel(BertPreTrainedModel):
         if labels is not None:
             use_cache = False
         else:
-            # use cache to speedup inference 
-            # (ألغينا assert not self.training لأنه يسبب مشاكل مع generate)
             use_cache = True
         
-        # طول البرومبت
         if prompt_feats is not None:
             self.prompt_length = prompt_feats.size(1)
 
-        # نضيف ماسك لـ tokens البرومبت على اليسار
         if attention_mask is not None and self.prompt_length > 0:
             left_padded_mask = attention_mask.new_ones(*(attention_mask.size(0), self.prompt_length))
             attention_mask = torch.cat((left_padded_mask, attention_mask), dim=1)
 
-        # لو نستخدم inputs_embeds نتجنب token_type_ids
         if inputs_embeds is not None:
             token_type_ids = None
 
@@ -377,7 +356,6 @@ class LanguageModel(BertPreTrainedModel):
 
         lm_loss = None
         if labels is not None:
-            # نحذف درجات البرومبت من الحساب ونشيّف إلى اليمين
             shifted_prediction_scores = prediction_scores[:, self.prompt_length:-1, :].contiguous()
             labels = labels[:, 1:].contiguous()
 
@@ -412,9 +390,7 @@ class LanguageModel(BertPreTrainedModel):
         use_cache=True,
         **model_kwargs,
     ):
-        """
-        تحضير مدخلات generation() مع دعم الـ prompt_feats
-        """
+
         assert 'prompt_feats' in model_kwargs
 
         input_shape = input_ids.shape
@@ -441,9 +417,7 @@ class LanguageModel(BertPreTrainedModel):
         }
 
     def _reorder_cache(self, past, beam_idx):
-        """
-        إعادة ترتيب past_key_values أثناء الـ beam search
-        """
+
         if past is None:
             return past
 
@@ -504,14 +478,11 @@ class LanguageModelWithCrossAttention(LanguageModel):
         }
 
 
-# ============================
 #  LABEL SMOOTHING LOSS
 # ============================
 
 class LabelSmoothSoftmaxCEV1(nn.Module):
-    '''
-    This is the autograd version, you can also try the LabelSmoothSoftmaxCEV2 that uses derived gradients
-    '''
+
     def __init__(self, lb_smooth=0.1, reduction='mean', ignore_index=-100):
         super(LabelSmoothSoftmaxCEV1, self).__init__()
         self.lb_smooth = lb_smooth
@@ -520,14 +491,7 @@ class LabelSmoothSoftmaxCEV1(nn.Module):
         self.log_softmax = nn.LogSoftmax(dim=1)
 
     def forward(self, logits, label):
-        '''
-        Same usage method as nn.CrossEntropyLoss:
-            # >>> criteria = LabelSmoothSoftmaxCEV1()
-            # >>> logits = torch.randn(8, 19, 384, 384) # nchw, float/half
-            # >>> lbs = torch.randint(0, 19, (8, 384, 384)) # nhw, int64_t
-            # >>> loss = criteria(logits, lbs)
-        '''
-        # overcome ignored label
+
         logits = logits.float()  # use fp32 to avoid nan
         with torch.no_grad():
             num_classes = logits.size(1)
