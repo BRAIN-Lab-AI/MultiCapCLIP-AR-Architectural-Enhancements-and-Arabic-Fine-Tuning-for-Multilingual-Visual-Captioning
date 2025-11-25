@@ -25,6 +25,7 @@ lang2code = {
     'zh': 1,    # Chinese
     'de': 2,    # German
     'fr': 3,    # French
+    'ar': 4,    # Arabic
 }
 # `max_languages` is to affect the type_vocab_size of LMs
 # i.e., we use token type embeddings to identify which language to be generated.
