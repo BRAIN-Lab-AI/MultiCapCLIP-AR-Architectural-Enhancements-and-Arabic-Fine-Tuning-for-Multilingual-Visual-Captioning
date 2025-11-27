@@ -226,8 +226,8 @@ How to Run the Code
 
 1. **Clone the Repository:**
     ```bash
-    git clone https://github.com/yourusername/MultiCapCLIP-SAB.git
-    cd MultiCapCLIP-SAB
+    git clone https://github.com/BRAIN-Lab-AI/MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning.git
+    cd MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning
     ```
 !python /content/drive/MyDrive/MultiCapCLIP/train_supervised_attention_bridge.py
 
