@@ -59,6 +59,7 @@ Both models will be evaluated on the Flickr30k dataset in a strict zero-shot set
 - Testing Data  [flickr30k Dataset](http://shannon.cs.illinois.edu/DenotationGraph/data/index.html)
 
 ### Dataset Setup
+follow the referance GitHub repo in the data structure files 
 To reproduce our experiments, you need the **MS COCO 2014** dataset.  
 We provide a simple script to download and extract everything automatically.
 
