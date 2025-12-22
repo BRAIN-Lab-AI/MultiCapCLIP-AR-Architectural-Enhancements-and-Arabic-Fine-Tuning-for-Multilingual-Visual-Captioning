@@ -47,7 +47,7 @@ Both models will be evaluated on the Flickr30k dataset in a strict zero-shot set
 
 ### Project Documents
 - **Presentation:** [Project Presentation](/[presentation.pptx](https://github.com/BRAIN-Lab-AI/MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning/blob/main/multicapclip_presentation.html))
-- **Report:** [Project Report](/[MultiCapCLIP_SAB(paper).pdf))
+- **Report:** [Project Report](/[[MultiCapCLIP_SAB(paper).pdf](https://github.com/BRAIN-Lab-AI/MultiCapCLIP-AR-Architectural-Enhancements-and-Arabic-Fine-Tuning-for-Multilingual-Visual-Captioning/blob/5cfa8017ff9227e5991ffccc3ef2ed6efb0b203e/MultiCapCLIP_SAB(paper).pdf)))
 
 ### Reference Paper
 - [(ACL'2023) MultiCapCLIP: Auto-Encoding Prompts for Zero-Shot Multilingual Visual Captioning](https://aclanthology.org/2023.acl-long.664/)
