@@ -46,8 +46,8 @@ Both models will be evaluated on the Flickr30k dataset in a strict zero-shot set
 
 
 ### Project Documents
-- **Presentation:** [Project Presentation](/[presentation.pptx](multicapclip_presentation.html)
-- **Report:** [Project Report](/[[MultiCapCLIP_SAB(paper).pdf](MultiCapCLIP_SAB(paper).pdf)
+- **Presentation:** [presentation.html](multicapclip_presentation.html)
+- **Report:** [MultiCapCLIP_SAB(paper).pdf](MultiCapCLIP_SAB(paper).pdf)
 
 ### Reference Paper
 - [(ACL'2023) MultiCapCLIP: Auto-Encoding Prompts for Zero-Shot Multilingual Visual Captioning](https://aclanthology.org/2023.acl-long.664/)
